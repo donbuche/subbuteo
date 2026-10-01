@@ -27,8 +27,9 @@ import { settingsView } from './views/settings.js'
 import { setupView } from './views/setup.js'
 
 // Doble splash: tiempos en ms desde que se abre la ventana (performance.now() cuenta desde la carga).
-// Entre los dos no se superan los 5 s: la app queda a la vista a los 4,9 s.
-const SPLASH = { studioOut: 2000, appIn: 2150, appOut: 4300, done: 4900 }
+// Ritmo pausado: cada logo se queda un rato a la vista y los fundidos no se pisan.
+// La app queda a la vista a los 7,3 s.
+const SPLASH = { studioOut: 2800, appIn: 3700, appOut: 6200, appReady: 6450, done: 7300 }
 const at = (ms, fn) => setTimeout(fn, Math.max(0, ms - performance.now()))
 
 document.body.classList.add(`platform-${window.api.platform}`)
@@ -56,14 +57,15 @@ appStage.innerHTML = `<img class="splash__app-logo" src="./images/subbuteo-logo.
 at(SPLASH.studioOut, () => studioStage.classList.add('is-leaving'))
 at(SPLASH.appIn, () => {
   appStage.classList.add('is-shown')
-  animate(appStage.querySelector('.splash__app-logo'), 'zoomIn', { duration: 700 })
-  animate(appStage.querySelector('.slogan'), 'fadeInUp', { delay: 300, duration: 600 })
-  setTimeout(() => appStage.classList.add('is-entered'), 800)
+  animate(appStage.querySelector('.splash__app-logo'), 'zoomIn', { duration: 900 })
+  animate(appStage.querySelector('.slogan'), 'fadeInUp', { delay: 400, duration: 800 })
+  setTimeout(() => appStage.classList.add('is-entered'), 1100)
 })
 // 2 → app: el splash se funde con la portada, que hace su entrada debajo
+// (un poco después, para que no quede tapada por el principio del fundido)
 at(SPLASH.appOut, () => {
   splash.classList.add('is-leaving')
-  setAppReady()
   music.start()
 })
+at(SPLASH.appReady, setAppReady)
 at(SPLASH.done, () => splash.remove())
