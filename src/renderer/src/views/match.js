@@ -1,5 +1,6 @@
 import { confirmDialog, openModal } from '../components/modal.js'
 import { setBack } from '../components/topbar.js'
+import { animate, enter } from '../core/animate.js'
 import { playGoal, playTick, playWhistle } from '../core/audio.js'
 import { icons } from '../core/icons.js'
 import { go } from '../core/router.js'
@@ -63,7 +64,10 @@ export function matchView(container, params) {
   let root = null
   const $ = (sel) => root.querySelector(sel)
 
-  function paint() {
+  let shownPhase = false
+  let shownHalf = 1
+
+  function paint({ animated = false } = {}) {
     container.innerHTML = `
       <section class="match">
         ${scoreSide('home', sides.home)}
@@ -87,7 +91,16 @@ export function matchView(container, params) {
     `
     root = container.firstElementChild
     root.addEventListener('click', onClick)
+    shownPhase = m.status === 'over' && !m.saved
+    shownHalf = m.half
     renderAll()
+    if (animated) {
+      enter(root, [
+        ['[data-side="home"]', 'fadeInLeft', 0, 600],
+        ['[data-side="away"]', 'fadeInRight', 0, 600],
+        ['.match__center', 'zoomIn', 150, 550]
+      ])
+    }
   }
 
   /* ---------- Render ---------- */
@@ -121,6 +134,12 @@ export function matchView(container, params) {
     const phase = $('[data-action="phase"]')
     phase.hidden = m.saved || m.status !== 'over'
     phase.innerHTML = m.half === 1 ? `${icons.play} ${t('match.start2')}` : t('match.finish')
+
+    // Al acabar una parte, el botón para seguir entra con un rebote; al cambiar de parte, late el indicador
+    if (!phase.hidden && !shownPhase) animate(phase, 'bounceIn', { duration: 700 })
+    shownPhase = !phase.hidden
+    if (m.half !== shownHalf) animate($('.half-pill.is-active'), 'heartBeat', { duration: 900 })
+    shownHalf = m.half
   }
 
   function renderAll() {
@@ -241,10 +260,10 @@ export function matchView(container, params) {
       body: `
         <div class="result">
           <div class="result__side"><img src="${esc(home.crest)}" alt="" /><strong>${esc(home.teamName)}</strong><span>${esc(home.player)}</span></div>
-          <div class="result__score">${home.score}<span>–</span>${away.score}</div>
+          <div class="result__score" data-animate="rubberBand" data-delay="250">${home.score}<span>–</span>${away.score}</div>
           <div class="result__side"><img src="${esc(away.crest)}" alt="" /><strong>${esc(away.teamName)}</strong><span>${esc(away.player)}</span></div>
         </div>
-        <p class="result__winner">${esc(winner)} · ${t('match.saved')}</p>`,
+        <p class="result__winner" data-animate="tada" data-delay="550">${esc(winner)} · ${t('match.saved')}</p>`,
       actions: [
         { label: t('match.toMenu'), value: 'home', variant: 'secondary' },
         { label: t('match.toHistory'), value: 'history', variant: 'secondary' },
@@ -255,14 +274,18 @@ export function matchView(container, params) {
     else go(choice)
   }
 
-  async function leave() {
+  // Confirma el abandono si hay un partido en curso sin guardar
+  async function confirmLeave({ quitting = false } = {}) {
     const inProgress = !m.saved && (m.status !== 'idle' || m.half > 1 || m.score.home !== sides.home.initial || m.score.away !== sides.away.initial)
-    if (inProgress) {
-      if (m.status === 'running') pause()
-      const ok = await confirmDialog(t('match.leaveTitle'), t('match.leaveBody'), t('match.leaveConfirm'))
-      if (!ok) return
-    }
-    go('home')
+    if (!inProgress) return true
+    if (m.status === 'running') pause()
+    return quitting
+      ? confirmDialog(t('app.quitTitle'), t('app.quitBody'), t('app.quitConfirm'))
+      : confirmDialog(t('match.leaveTitle'), t('match.leaveBody'), t('match.leaveConfirm'))
+  }
+
+  async function leave() {
+    if (await confirmLeave()) go('home')
   }
 
   /* ---------- Eventos ---------- */
@@ -294,10 +317,11 @@ export function matchView(container, params) {
 
   setBack(leave)
   if (getSettings().keepAwake) window.api.keepAwake(true)
-  paint()
+  paint({ animated: true })
 
   return {
-    relocalize: paint,
+    relocalize: () => paint(),
+    confirmLeave: () => confirmLeave({ quitting: true }),
     cleanup() {
       stopTicker()
       document.removeEventListener('keydown', onKey)

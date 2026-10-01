@@ -71,6 +71,14 @@
   &.is-off {
     color: rgb(255 255 255 / 0.6);
   }
+
+  // Salir de la app: discreto en reposo, rojo al pasar por encima
+  &--danger:hover,
+  &--danger:focus-visible {
+    color: $paper;
+    background: $red;
+    border-color: $red-light;
+  }
 }
 
 .lang-menu {
@@ -584,7 +592,6 @@ kbd {
   &__card {
     width: min(780px, 100%);
     padding: 36px;
-    animation: pop-in 200ms $ease;
   }
 
   &__title {
@@ -670,12 +677,6 @@ kbd {
   border-radius: 999px;
   box-shadow: 0 16px 30px -12px rgb(0 0 0 / 0.6);
   translate: -50% 0;
-  animation: pop-in 200ms $ease;
-  transition: opacity 300ms;
-
-  &.is-leaving {
-    opacity: 0;
-  }
 }
 
 @keyframes fade-in {

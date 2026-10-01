@@ -9,6 +9,7 @@ contextBridge.exposeInMainWorld('api', {
   saveTextFile: (defaultName, content, extension) =>
     ipcRenderer.invoke('file:save-text', { defaultName, content, extension }),
   toggleFullscreen: () => ipcRenderer.invoke('window:toggle-fullscreen'),
+  quit: () => ipcRenderer.invoke('app:quit'),
   isFullscreen: () => ipcRenderer.invoke('window:is-fullscreen'),
   onFullscreenChange: (callback) => ipcRenderer.on('window:fullscreen', (_e, value) => callback(value)),
   keepAwake: (enabled) => ipcRenderer.invoke('power:keep-awake', enabled),

@@ -2,6 +2,7 @@ import { DEFAULT_SETTINGS, DEFAULT_TEAMS } from '@shared/defaults.js'
 import { confirmDialog, toast } from '../components/modal.js'
 import { setBack } from '../components/topbar.js'
 import { applyVolumes, music, previewSound } from '../core/audio.js'
+import { animate, enter, stagger } from '../core/animate.js'
 import { icons } from '../core/icons.js'
 import { go } from '../core/router.js'
 import { getSettings, getTeams, saveTeams, updateSettings } from '../core/state.js'
@@ -223,7 +224,7 @@ export function settingsView(container) {
   let panel = null
   const draft = { name: '', colors: ['#e1261c', '#ffffff'], crest: null }
 
-  function paint() {
+  function paint({ animated = false } = {}) {
     container.innerHTML = `
       <section class="settings">
         <h1 class="screen-title">${t('settings.title')}</h1>
@@ -241,6 +242,10 @@ export function settingsView(container) {
     root.addEventListener('input', onInput)
     root.addEventListener('change', onChange)
     render()
+    if (animated) {
+      enter(root, [['.screen-title', 'fadeInDown', 0, 500], ['[data-panel]', 'fadeInUp', 150, 600]])
+      stagger(root, '.settings__nav-item', 'fadeInLeft', { start: 100, step: 60, duration: 450 })
+    }
   }
 
   function render() {
@@ -333,7 +338,8 @@ export function settingsView(container) {
 
     if (el('[data-section]')) {
       section = el('[data-section]').dataset.section
-      return render()
+      render()
+      return animate(panel, 'fadeIn', { duration: 300 })
     }
 
     if (el('[data-team-crest]')) return changeTeamCrest(teamId)
@@ -423,6 +429,6 @@ export function settingsView(container) {
     }
   }
 
-  paint()
-  return { relocalize: paint }
+  paint({ animated: true })
+  return { relocalize: () => paint() }
 }

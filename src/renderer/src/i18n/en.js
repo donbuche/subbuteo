@@ -1,12 +1,15 @@
 export default {
   'lang.name': 'English',
-  'splash.credit': 'Developed by',
   'common.cancel': 'Cancel',
   'common.accept': 'OK',
   'common.back': 'Back',
   'common.minutes': '{n} minutes',
   'common.min': '{n} min',
 
+  'app.quit': 'Quit app',
+  'app.quitTitle': 'Quit the app',
+  'app.quitBody': 'The match in progress will not be saved to the history.',
+  'app.quitConfirm': 'Quit',
   'topbar.language': 'Language',
   'topbar.fullscreen': 'Full screen',
   'topbar.exitFullscreen': 'Exit full screen',

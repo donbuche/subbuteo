@@ -23,6 +23,22 @@ $red-gradient: linear-gradient(180deg, $red-light 0%, $red 48%, $red-dark 100%);
 $white-gradient: linear-gradient(180deg, #ffffff 0%, #f4efe4 100%);
 $ease: cubic-bezier(0.2, 0.8, 0.2, 1);
 
+// Césped segado a franjas con viñeteado y líneas del campo (fondo de la app y del splash)
+@mixin pitch-background {
+  background-color: $pitch;
+  background-image:
+    radial-gradient(ellipse at center, transparent 45%, rgb(0 0 0 / 0.28) 100%),
+    repeating-linear-gradient(90deg, $pitch 0 8.333vw, $pitch-light 8.333vw 16.666vw);
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: url('../assets/pitch-lines.svg') center / cover no-repeat;
+    pointer-events: none;
+  }
+}
+
 // Rotulado deportivo: condensada, mayúsculas y con aire
 @mixin display($weight: 700, $italic: false) {
   font-family: $font-display;

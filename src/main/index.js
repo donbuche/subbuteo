@@ -21,6 +21,9 @@ function load(win, page) {
   return win.loadFile(join(__dirname, `../renderer/${page}.html`))
 }
 
+// En desarrollo, Electron muestra su propio icono: usamos el de la app (empaquetada ya lo lleva)
+const devIcon = () => join(app.getAppPath(), 'build/icon.png')
+
 function createMainWindow() {
   mainWindow = new BrowserWindow({
     width: 1440,
@@ -32,8 +35,9 @@ function createMainWindow() {
     // de esta misma ventana, así no hay salto de tamaño entre splash y app
     fullscreen: getState().settings.startFullscreen,
     fullscreenable: true,
-    backgroundColor: '#000000',
+    backgroundColor: '#0b1222',
     title: 'Subbuteo Scoreboard',
+    ...(!app.isPackaged && !isMac ? { icon: devIcon() } : {}),
     ...(isMac ? { titleBarStyle: 'hiddenInset' } : {}),
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
@@ -161,6 +165,8 @@ function registerIpc() {
     return true
   })
 
+  ipcMain.handle('app:quit', () => app.quit())
+
   ipcMain.handle('window:toggle-fullscreen', () => {
     mainWindow.setFullScreen(!mainWindow.isFullScreen())
   })
@@ -178,6 +184,7 @@ function registerIpc() {
 }
 
 app.whenReady().then(async () => {
+  if (isMac && !app.isPackaged && existsSync(devIcon())) app.dock.setIcon(devIcon())
   loadStore()
   registerMediaProtocol()
   registerIpc()

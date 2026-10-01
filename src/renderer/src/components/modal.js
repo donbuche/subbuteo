@@ -1,8 +1,10 @@
+import { animate } from '../core/animate.js'
 import { el, esc } from '../core/utils.js'
 import { t } from '../i18n/index.js'
 
 // Modal genérico. `actions` = [{ label, value, variant: 'secondary' }]; resuelve con el value pulsado
-// (o null si se cierra con Escape). `body` admite HTML ya escapado.
+// (o null si se cierra con Escape). `body` admite HTML ya escapado; los elementos
+// con data-animate="efecto" (y data-delay en ms) se animan al abrir.
 export function openModal({ title, body = '', actions = [{ label: t('common.accept'), value: true }], dismissable = true }) {
   return new Promise((resolve) => {
     const root = document.getElementById('modal-root')
@@ -38,6 +40,8 @@ export function openModal({ title, body = '', actions = [{ label: t('common.acce
     })
     document.addEventListener('keydown', onKey, true)
     root.append(modal)
+    animate(modal.querySelector('.modal__card'), 'zoomIn', { duration: 280 })
+    modal.querySelectorAll('[data-animate]').forEach((node) => animate(node, node.dataset.animate, { delay: Number(node.dataset.delay) || 0 }))
     modal.querySelector('.modal__actions .btn:last-child')?.focus()
   })
 }
@@ -57,6 +61,6 @@ export async function confirmDialog(title, message, confirmLabel = t('common.acc
 export function toast(message) {
   const node = el(`<div class="toast" role="status">${esc(message)}</div>`)
   document.body.append(node)
-  setTimeout(() => node.classList.add('is-leaving'), 2200)
-  setTimeout(() => node.remove(), 2600)
+  animate(node, 'fadeInUp', { duration: 300 })
+  setTimeout(() => animate(node, 'fadeOutDown', { duration: 300 }).then(() => node.remove()), 2300)
 }

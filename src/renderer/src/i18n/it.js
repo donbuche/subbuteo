@@ -1,12 +1,15 @@
 export default {
   'lang.name': 'Italiano',
-  'splash.credit': 'Sviluppato da',
   'common.cancel': 'Annulla',
   'common.accept': 'OK',
   'common.back': 'Indietro',
   'common.minutes': '{n} minuti',
   'common.min': '{n} min',
 
+  'app.quit': 'Esci dall’app',
+  'app.quitTitle': 'Uscire dall’app',
+  'app.quitBody': 'La partita in corso non verrà salvata nello storico.',
+  'app.quitConfirm': 'Esci',
   'topbar.language': 'Lingua',
   'topbar.fullscreen': 'Schermo intero',
   'topbar.exitFullscreen': 'Esci da schermo intero',

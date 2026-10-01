@@ -1,5 +1,6 @@
 import { confirmDialog, toast } from '../components/modal.js'
 import { setBack } from '../components/topbar.js'
+import { animate, enter, stagger } from '../core/animate.js'
 import { icons } from '../core/icons.js'
 import { go } from '../core/router.js'
 import { getMatches, saveMatches } from '../core/state.js'
@@ -90,7 +91,7 @@ export function historyView(container) {
   let tab = 'matches'
   let root = null
 
-  function paint() {
+  function paint({ animated = false } = {}) {
     container.innerHTML = `
       <section class="history">
         <div class="screen-head">
@@ -109,10 +110,11 @@ export function historyView(container) {
     `
     root = container.firstElementChild
     root.addEventListener('click', onClick)
-    render()
+    render({ animated })
+    if (animated) enter(root, [['.screen-title', 'fadeInDown', 0, 500], ['.screen-head__tools', 'fadeIn', 150, 600]])
   }
 
-  function render() {
+  function render({ animated = false } = {}) {
     const matches = getMatches()
     root.querySelectorAll('[data-tab]').forEach((b) => b.setAttribute('aria-selected', b.dataset.tab === tab))
     root.querySelectorAll('[data-action]').forEach((b) => (b.disabled = !matches.length))
@@ -129,13 +131,15 @@ export function historyView(container) {
     content.innerHTML = tab === 'matches'
       ? `<ul class="history-list">${matches.map(matchRow).join('')}</ul>`
       : standingsTable(matches)
+    if (animated) stagger(content, '.history-row, .standings', 'fadeInUp', { start: 150, step: 60, max: 600, duration: 500 })
   }
 
   async function onClick(e) {
     const tabBtn = e.target.closest('[data-tab]')
     if (tabBtn) {
       tab = tabBtn.dataset.tab
-      return render()
+      render()
+      return animate(root.querySelector('[data-content]').firstElementChild, 'fadeIn', { duration: 300 })
     }
     if (e.target.closest('[data-new]')) return go('setup')
 
@@ -143,6 +147,7 @@ export function historyView(container) {
     if (del) {
       const id = del.closest('[data-id]').dataset.id
       if (await confirmDialog(t('history.delete'), t('history.deleteBody'), t('history.deleteConfirm'))) {
+        await animate(del.closest('[data-id]'), 'fadeOutLeft', { duration: 350 })
         await saveMatches(getMatches().filter((m) => m.id !== id))
         render()
       }
@@ -160,6 +165,6 @@ export function historyView(container) {
     }
   }
 
-  paint()
-  return { relocalize: paint }
+  paint({ animated: true })
+  return { relocalize: () => paint() }
 }

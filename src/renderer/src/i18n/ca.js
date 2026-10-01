@@ -1,12 +1,15 @@
 export default {
   'lang.name': 'Català',
-  'splash.credit': 'Desenvolupat per',
   'common.cancel': 'Cancel·la',
   'common.accept': 'D’acord',
   'common.back': 'Torna',
   'common.minutes': '{n} minuts',
   'common.min': '{n} min',
 
+  'app.quit': 'Surt de l’app',
+  'app.quitTitle': 'Sortir de l’app',
+  'app.quitBody': 'El partit en curs no es desarà a l’historial.',
+  'app.quitConfirm': 'Surt',
   'topbar.language': 'Idioma',
   'topbar.fullscreen': 'Pantalla completa',
   'topbar.exitFullscreen': 'Surt de la pantalla completa',
