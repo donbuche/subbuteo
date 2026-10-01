@@ -4,6 +4,7 @@ import { icons } from '../core/icons.js'
 import { go } from '../core/router.js'
 import { getMatches, saveMatches } from '../core/state.js'
 import { esc, formatDate, formatTime } from '../core/utils.js'
+import { t } from '../i18n/index.js'
 
 const outcome = (own, other) => (own > other ? 'win' : own < other ? 'loss' : 'draw')
 
@@ -23,12 +24,12 @@ function matchRow(match) {
     <li class="history-row panel" data-id="${esc(match.id)}">
       <div class="history-row__date">
         <strong>${formatDate(match.date)}</strong>
-        <span>${formatTime(match.date)} · 2×${match.duration}′${match.endedEarly ? ' · terminado antes' : ''}</span>
+        <span>${formatTime(match.date)} · 2×${match.duration}′${match.endedEarly ? ` · ${t('history.endedEarly')}` : ''}</span>
       </div>
       ${side(home, result === 'win')}
       <div class="history-row__score">${home.score}<span>–</span>${away.score}</div>
       ${side(away, result === 'loss')}
-      <button class="btn-icon btn-icon--sm" type="button" data-delete title="Eliminar partido">${icons.trash}</button>
+      <button class="btn-icon btn-icon--sm" type="button" data-delete title="${t('history.delete')}" aria-label="${t('history.delete')}">${icons.trash}</button>
     </li>`
 }
 
@@ -55,13 +56,13 @@ function standings(matches) {
 }
 
 function standingsTable(matches) {
-  const rows = standings(matches)
+  const cols = ['played', 'won', 'drawn', 'lost', 'for', 'against', 'diff', 'points'].map((c) => `<th>${t(`history.col.${c}`)}</th>`).join('')
   return `
     <div class="panel standings">
       <table>
-        <thead><tr><th>#</th><th class="text-left">Jugador</th><th>PJ</th><th>G</th><th>E</th><th>P</th><th>GF</th><th>GC</th><th>DG</th><th>Pts</th></tr></thead>
+        <thead><tr><th>#</th><th class="text-left">${t('history.col.player')}</th>${cols}</tr></thead>
         <tbody>
-          ${rows.map((r, i) => `
+          ${standings(matches).map((r, i) => `
             <tr>
               <td>${i + 1}</td><td class="text-left"><strong>${esc(r.name)}</strong></td>
               <td>${r.pj}</td><td>${r.g}</td><td>${r.e}</td><td>${r.p}</td>
@@ -74,12 +75,12 @@ function standingsTable(matches) {
 
 function toCsv(matches) {
   const cell = (v) => `"${String(v).replace(/"/g, '""')}"`
-  const header = ['Fecha', 'Hora', 'Duración parte (min)', 'Equipo 1', 'Jugador 1', 'Goles 1', 'Goles 2', 'Jugador 2', 'Equipo 2', 'Terminado antes']
+  const header = ['date', 'time', 'duration', 'team1', 'player1', 'goals1', 'goals2', 'player2', 'team2', 'endedEarly'].map((k) => t(`history.csv.${k}`))
   const lines = matches.map((m) => [
     formatDate(m.date), formatTime(m.date), m.duration,
     m.home.teamName, m.home.player, m.home.score,
     m.away.score, m.away.player, m.away.teamName,
-    m.endedEarly ? 'Sí' : 'No'
+    t(m.endedEarly ? 'history.csv.yes' : 'history.csv.no')
   ].map(cell).join(';'))
   return '﻿' + [header.map(cell).join(';'), ...lines].join('\n')
 }
@@ -87,36 +88,41 @@ function toCsv(matches) {
 export function historyView(container) {
   setBack(() => go('home'))
   let tab = 'matches'
+  let root = null
 
-  container.innerHTML = `
-    <section class="history">
-      <div class="screen-head">
-        <h1 class="screen-title">Historial de partidos</h1>
-        <div class="tabs" role="tablist">
-          <button class="tab" type="button" role="tab" data-tab="matches">Partidos</button>
-          <button class="tab" type="button" role="tab" data-tab="standings">Clasificación</button>
+  function paint() {
+    container.innerHTML = `
+      <section class="history">
+        <div class="screen-head">
+          <h1 class="screen-title">${t('history.title')}</h1>
+          <div class="screen-head__tools">
+            <div class="segmented" role="tablist">
+              <button class="segmented__item" type="button" role="tab" data-tab="matches">${t('history.tabMatches')}</button>
+              <button class="segmented__item" type="button" role="tab" data-tab="standings">${t('history.tabStandings')}</button>
+            </div>
+            <button class="btn btn--secondary" type="button" data-action="export">${icons.download} ${t('history.export')}</button>
+            <button class="btn btn--outline" type="button" data-action="clear">${icons.trash} ${t('history.clear')}</button>
+          </div>
         </div>
-        <div class="flex gap-3">
-          <button class="btn" type="button" data-action="export">${icons.download} Exportar CSV</button>
-          <button class="btn" type="button" data-action="clear">${icons.trash} Borrar todo</button>
-        </div>
-      </div>
-      <div data-content></div>
-    </section>
-  `
-  const root = container.firstElementChild
+        <div data-content></div>
+      </section>
+    `
+    root = container.firstElementChild
+    root.addEventListener('click', onClick)
+    render()
+  }
 
-  const render = () => {
+  function render() {
     const matches = getMatches()
-    root.querySelectorAll('[data-tab]').forEach((t) => t.setAttribute('aria-selected', t.dataset.tab === tab))
+    root.querySelectorAll('[data-tab]').forEach((b) => b.setAttribute('aria-selected', b.dataset.tab === tab))
     root.querySelectorAll('[data-action]').forEach((b) => (b.disabled = !matches.length))
     const content = root.querySelector('[data-content]')
 
     if (!matches.length) {
       content.innerHTML = `
         <div class="panel empty-state">
-          <p>Todavía no hay partidos registrados.</p>
-          <button class="btn btn--lg" type="button" data-new>Nuevo partido</button>
+          <p>${t('history.empty')}</p>
+          <button class="btn btn--lg" type="button" data-new>${icons.play} ${t('home.newMatch')}</button>
         </div>`
       return
     }
@@ -125,7 +131,7 @@ export function historyView(container) {
       : standingsTable(matches)
   }
 
-  root.addEventListener('click', async (e) => {
+  async function onClick(e) {
     const tabBtn = e.target.closest('[data-tab]')
     if (tabBtn) {
       tab = tabBtn.dataset.tab
@@ -136,7 +142,7 @@ export function historyView(container) {
     const del = e.target.closest('[data-delete]')
     if (del) {
       const id = del.closest('[data-id]').dataset.id
-      if (await confirmDialog('Eliminar partido', 'Este partido desaparecerá del historial.', 'Eliminar')) {
+      if (await confirmDialog(t('history.delete'), t('history.deleteBody'), t('history.deleteConfirm'))) {
         await saveMatches(getMatches().filter((m) => m.id !== id))
         render()
       }
@@ -146,13 +152,14 @@ export function historyView(container) {
     const action = e.target.closest('[data-action]')?.dataset.action
     if (action === 'export') {
       const stamp = new Date().toISOString().slice(0, 10)
-      if (await window.api.saveTextFile(`subbuteo-historial-${stamp}.csv`, toCsv(getMatches()), 'csv')) toast('Historial exportado')
+      if (await window.api.saveTextFile(`${t('history.fileName')}-${stamp}.csv`, toCsv(getMatches()), 'csv')) toast(t('history.exported'))
     }
-    if (action === 'clear' && await confirmDialog('Borrar todo el historial', 'Se eliminarán todos los partidos. Esta acción no se puede deshacer.', 'Borrar todo')) {
+    if (action === 'clear' && await confirmDialog(t('history.clearTitle'), t('history.clearBody'), t('history.clear'))) {
       await saveMatches([])
       render()
     }
-  })
+  }
 
-  render()
+  paint()
+  return { relocalize: paint }
 }

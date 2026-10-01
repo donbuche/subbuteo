@@ -5,70 +5,57 @@ import { applyVolumes, music, previewSound } from '../core/audio.js'
 import { icons } from '../core/icons.js'
 import { go } from '../core/router.js'
 import { getSettings, getTeams, saveTeams, updateSettings } from '../core/state.js'
-import { crestUrl, esc, slugify } from '../core/utils.js'
+import { crestUrl, esc, slugify, teamName } from '../core/utils.js'
+import { LANGUAGES, setLanguage, t } from '../i18n/index.js'
 
-const SECTIONS = [
-  { id: 'teams', label: 'Equipos' },
-  { id: 'durations', label: 'Duración' },
-  { id: 'sounds', label: 'Sonidos' },
-  { id: 'music', label: 'Música' },
-  { id: 'general', label: 'General' }
-]
-
-const SOUNDS = [
-  { key: 'goal', label: 'Gol', hint: 'Aplausos y griterío de la grada' },
-  { key: 'whistleStart', label: 'Inicio / reanudación', hint: 'Silbato al empezar o reanudar una parte' },
-  { key: 'whistlePause', label: 'Pausa', hint: 'Silbato al pausar el reloj' },
-  { key: 'whistleEnd', label: 'Final de parte', hint: 'Silbato al acabar una parte o el partido' }
-]
-
+const SECTIONS = ['teams', 'durations', 'sounds', 'music', 'general']
+const SOUNDS = ['goal', 'whistleStart', 'whistlePause', 'whistleEnd']
 const MAX_DURATION = 90
 
 /* ---------- Plantillas de cada sección ---------- */
 
 function teamsSection(draft) {
-  const teams = getTeams()
-  const defaultCrest = (id) => DEFAULT_TEAMS.find((t) => t.id === id)?.crest
+  const defaultCrest = (id) => DEFAULT_TEAMS.find((team) => team.id === id)?.crest
   return `
     <div class="settings-block">
-      <h2 class="settings-block__title">Equipos disponibles</h2>
+      <h2 class="settings-block__title">${t('settings.teams.available')}</h2>
       <ul class="team-list">
-        ${teams.map((t) => `
-          <li class="team-list__item" data-team="${esc(t.id)}">
-            <img src="${esc(crestUrl(t))}" alt="" />
-            <span class="team-list__name">${esc(t.name)}</span>
+        ${getTeams().map((team) => `
+          <li class="team-list__item" data-team="${esc(team.id)}">
+            <img src="${esc(crestUrl(team))}" alt="" />
+            <span class="team-list__name">${esc(teamName(team))}</span>
             <div class="team-list__actions">
-              <button class="btn-icon btn-icon--sm" type="button" data-team-crest title="Cambiar escudo">${icons.upload}</button>
-              ${t.builtin && t.crest !== defaultCrest(t.id) ? `<button class="btn-icon btn-icon--sm" type="button" data-team-restore title="Restaurar escudo original">${icons.undo}</button>` : ''}
-              ${t.builtin ? '' : `<button class="btn-icon btn-icon--sm" type="button" data-team-delete title="Eliminar equipo">${icons.trash}</button>`}
+              <button class="btn-icon btn-icon--sm" type="button" data-team-crest title="${t('settings.teams.changeCrest')}" aria-label="${t('settings.teams.changeCrest')}">${icons.upload}</button>
+              ${team.builtin && team.crest !== defaultCrest(team.id) ? `<button class="btn-icon btn-icon--sm" type="button" data-team-restore title="${t('settings.teams.restoreCrest')}" aria-label="${t('settings.teams.restoreCrest')}">${icons.undo}</button>` : ''}
+              ${team.builtin ? '' : `<button class="btn-icon btn-icon--sm" type="button" data-team-delete title="${t('settings.teams.delete')}" aria-label="${t('settings.teams.delete')}">${icons.trash}</button>`}
             </div>
           </li>`).join('')}
       </ul>
     </div>
     <div class="settings-block">
-      <h2 class="settings-block__title">Añadir un nuevo equipo</h2>
+      <h2 class="settings-block__title">${t('settings.teams.new')}</h2>
       <div class="new-team">
         <img class="new-team__crest" data-new-crest-preview src="${esc(crestUrl({ name: draft.name || '?', colors: draft.colors, crest: draft.crest }))}" alt="" />
         <div class="flex flex-col gap-4 flex-1">
           <label class="field">
-            <span class="field__label">Nombre</span>
-            <input class="input" data-new-team="name" maxlength="32" placeholder="Ej.: Real Betis" value="${esc(draft.name)}" />
+            <span class="field__label">${t('settings.teams.name')}</span>
+            <input class="input" data-new-team="name" maxlength="32" placeholder="${t('settings.teams.namePlaceholder')}" value="${esc(draft.name)}" />
           </label>
           <div class="flex gap-4 items-end flex-wrap">
             <label class="field">
-              <span class="field__label">Color 1</span>
+              <span class="field__label">${t('settings.teams.color1')}</span>
               <input class="input input--color" type="color" data-new-team="color0" value="${draft.colors[0]}" />
             </label>
             <label class="field">
-              <span class="field__label">Color 2</span>
+              <span class="field__label">${t('settings.teams.color2')}</span>
               <input class="input input--color" type="color" data-new-team="color1" value="${draft.colors[1]}" />
             </label>
-            <button class="btn" type="button" data-new-team-crest>${icons.upload} ${draft.crest ? 'Cambiar escudo' : 'Subir escudo'}</button>
-            ${draft.crest ? `<button class="btn btn--ghost" type="button" data-new-team-crest-clear>Quitar escudo</button>` : ''}
+            <button class="btn btn--secondary" type="button" data-new-team-crest>${icons.upload} ${draft.crest ? t('settings.teams.changeCrest') : t('settings.teams.uploadCrest')}</button>
+            ${draft.crest ? `<button class="btn btn--outline-dark" type="button" data-new-team-crest-clear>${t('settings.teams.removeCrest')}</button>` : ''}
           </div>
-          <p class="hint">Si no subes un escudo, se generará uno con los colores del equipo.</p>
+          <p class="hint">${t('settings.teams.crestHint')}</p>
         </div>
-        <button class="btn btn--lg self-end" type="button" data-new-team-add>${icons.plus} Añadir equipo</button>
+        <button class="btn btn--lg self-end" type="button" data-new-team-add>${icons.plus} ${t('settings.teams.add')}</button>
       </div>
     </div>`
 }
@@ -77,32 +64,32 @@ function durationsSection() {
   const { durations, defaultDuration } = getSettings()
   return `
     <div class="settings-block">
-      <h2 class="settings-block__title">Duraciones predefinidas (minutos por parte)</h2>
+      <h2 class="settings-block__title">${t('settings.durations.presets')}</h2>
       <ul class="chips">
         ${durations.map((d) => `
           <li class="chip ${d === defaultDuration ? 'is-default' : ''}">
-            <span>${d} min</span>
-            <button type="button" class="chip__remove" data-duration-remove="${d}" title="Quitar" ${durations.length === 1 ? 'disabled' : ''}>${icons.close}</button>
+            <span>${t('common.min', { n: d })}</span>
+            <button type="button" class="chip__remove" data-duration-remove="${d}" title="${t('settings.durations.remove')}" aria-label="${t('settings.durations.remove')}" ${durations.length === 1 ? 'disabled' : ''}>${icons.close}</button>
           </li>`).join('')}
       </ul>
       <div class="flex gap-4 items-end flex-wrap mt-6">
         <label class="field">
-          <span class="field__label">Nueva duración</span>
-          <input class="input w-40" type="number" min="1" max="${MAX_DURATION}" step="1" data-duration-input placeholder="Ej.: 12" />
+          <span class="field__label">${t('settings.durations.new')}</span>
+          <input class="input w-40" type="number" min="1" max="${MAX_DURATION}" step="1" data-duration-input placeholder="${t('settings.durations.placeholder')}" />
         </label>
-        <button class="btn" type="button" data-duration-add>${icons.plus} Añadir</button>
+        <button class="btn" type="button" data-duration-add>${icons.plus} ${t('settings.durations.add')}</button>
       </div>
     </div>
     <div class="settings-block">
-      <h2 class="settings-block__title">Duración por defecto</h2>
+      <h2 class="settings-block__title">${t('settings.durations.default')}</h2>
       <div class="flex gap-4 items-end flex-wrap">
         <label class="field">
-          <span class="field__label">Al crear un partido</span>
+          <span class="field__label">${t('settings.durations.onCreate')}</span>
           <select class="input w-56" data-duration-default>
-            ${durations.map((d) => `<option value="${d}" ${d === defaultDuration ? 'selected' : ''}>${d} minutos</option>`).join('')}
+            ${durations.map((d) => `<option value="${d}" ${d === defaultDuration ? 'selected' : ''}>${t('common.minutes', { n: d })}</option>`).join('')}
           </select>
         </label>
-        <button class="btn btn--ghost" type="button" data-duration-reset>Restaurar valores originales</button>
+        <button class="btn btn--outline-dark" type="button" data-duration-reset>${icons.undo} ${t('settings.durations.reset')}</button>
       </div>
     </div>`
 }
@@ -125,21 +112,21 @@ function soundsSection() {
   const { sounds, volumes } = getSettings()
   return `
     <div class="settings-block">
-      <h2 class="settings-block__title">Volumen de efectos</h2>
+      <h2 class="settings-block__title">${t('settings.sounds.volume')}</h2>
       ${slider('effects', volumes.effects)}
     </div>
     <div class="settings-block">
-      <h2 class="settings-block__title">Sonidos del partido</h2>
+      <h2 class="settings-block__title">${t('settings.sounds.list')}</h2>
       <ul class="sound-list">
-        ${SOUNDS.map(({ key, label, hint }) => `
+        ${SOUNDS.map((key) => `
           <li class="sound-list__item" data-sound="${key}">
             <div class="flex-1 min-w-0">
-              <strong>${label}</strong>
-              <span class="hint">${hint} · ${sounds[key] ? 'Archivo personalizado' : 'Sonido por defecto'}</span>
+              <strong>${t(`settings.sounds.${key}`)}</strong>
+              <span class="hint">${t(`settings.sounds.${key}Hint`)} · ${sounds[key] ? t('settings.sounds.custom') : t('settings.sounds.default')}</span>
             </div>
-            <button class="btn-icon btn-icon--sm" type="button" data-sound-play title="Probar">${icons.play}</button>
-            <button class="btn-icon btn-icon--sm" type="button" data-sound-change title="Elegir archivo">${icons.upload}</button>
-            ${sounds[key] ? `<button class="btn-icon btn-icon--sm" type="button" data-sound-reset title="Volver al sonido por defecto">${icons.undo}</button>` : ''}
+            <button class="btn-icon btn-icon--sm btn-icon--primary" type="button" data-sound-play title="${t('settings.sounds.play')}" aria-label="${t('settings.sounds.play')}">${icons.play}</button>
+            <button class="btn-icon btn-icon--sm" type="button" data-sound-change title="${t('settings.sounds.choose')}" aria-label="${t('settings.sounds.choose')}">${icons.upload}</button>
+            ${sounds[key] ? `<button class="btn-icon btn-icon--sm" type="button" data-sound-reset title="${t('settings.sounds.reset')}" aria-label="${t('settings.sounds.reset')}">${icons.undo}</button>` : ''}
           </li>`).join('')}
       </ul>
     </div>`
@@ -149,48 +136,78 @@ function musicSection() {
   const { music: cfg, volumes, musicMuted } = getSettings()
   return `
     <div class="settings-block">
-      <h2 class="settings-block__title">Volumen de la música</h2>
+      <h2 class="settings-block__title">${t('settings.music.volume')}</h2>
       ${slider('music', volumes.music)}
       <div class="flex flex-col gap-3 mt-6">
-        ${toggle('musicMuted', 'Silenciar la música de fondo', musicMuted)}
-        ${toggle('shuffle', 'Reproducción aleatoria', cfg.shuffle)}
+        ${toggle('musicMuted', t('settings.music.mute'), musicMuted)}
+        ${cfg.tracks.length ? toggle('shuffle', t('settings.music.shuffle'), cfg.shuffle) : ''}
       </div>
     </div>
+    ${cfg.tracks.length ? '' : defaultMusicBlock()}
     <div class="settings-block">
-      <h2 class="settings-block__title">Lista de reproducción</h2>
+      <h2 class="settings-block__title">${t('settings.music.playlist')}</h2>
       ${cfg.tracks.length
         ? `<ol class="track-list">
-            ${cfg.tracks.map((t, i) => `
+            ${cfg.tracks.map((track, i) => `
               <li class="track-list__item" data-track="${i}">
                 <span class="track-list__index">${i + 1}</span>
-                <span class="flex-1 truncate">${esc(t.name)}</span>
-                <button class="btn-icon btn-icon--sm" type="button" data-track-move="-1" title="Subir" ${i === 0 ? 'disabled' : ''}>${icons.up}</button>
-                <button class="btn-icon btn-icon--sm" type="button" data-track-move="1" title="Bajar" ${i === cfg.tracks.length - 1 ? 'disabled' : ''}>${icons.down}</button>
-                <button class="btn-icon btn-icon--sm" type="button" data-track-remove title="Quitar">${icons.trash}</button>
+                <span class="flex-1 truncate">${esc(track.name)}</span>
+                <button class="btn-icon btn-icon--sm" type="button" data-track-move="-1" title="${t('settings.music.up')}" aria-label="${t('settings.music.up')}" ${i === 0 ? 'disabled' : ''}>${icons.up}</button>
+                <button class="btn-icon btn-icon--sm" type="button" data-track-move="1" title="${t('settings.music.down')}" aria-label="${t('settings.music.down')}" ${i === cfg.tracks.length - 1 ? 'disabled' : ''}>${icons.down}</button>
+                <button class="btn-icon btn-icon--sm" type="button" data-track-remove title="${t('settings.music.remove')}" aria-label="${t('settings.music.remove')}">${icons.trash}</button>
               </li>`).join('')}
           </ol>`
-        : '<p class="hint">Sin temas propios: suena el tema sintetizado por defecto.</p>'}
-      <div class="mt-6"><button class="btn" type="button" data-track-add>${icons.plus} Añadir temas (MP3, WAV, OGG, M4A…)</button></div>
+        : `<p class="hint">${t(music.defaults.length ? 'settings.music.customHint' : 'settings.music.empty')}</p>`}
+      <div class="flex gap-4 flex-wrap mt-6">
+        <button class="btn" type="button" data-track-add>${icons.plus} ${t('settings.music.add')}</button>
+        ${cfg.tracks.length && music.defaults.length ? `<button class="btn btn--outline-dark" type="button" data-track-restore>${icons.undo} ${t('settings.music.restoreDefault')}</button>` : ''}
+      </div>
+    </div>`
+}
+
+// Hilo musical incluido en la app: solo lectura, se usa mientras no haya temas propios
+function defaultMusicBlock() {
+  if (!music.defaults.length) return ''
+  return `
+    <div class="settings-block">
+      <h2 class="settings-block__title">${t('settings.music.defaultTitle')}</h2>
+      <p class="hint mb-4">${t('settings.music.defaultHint', { n: music.defaults.length })}</p>
+      <ol class="track-list track-list--readonly">
+        ${music.defaults.map((track, i) => `
+          <li class="track-list__item">
+            <span class="track-list__index">${i + 1}</span>
+            <span class="flex-1 truncate">${esc(track.name)}</span>
+          </li>`).join('')}
+      </ol>
     </div>`
 }
 
 function generalSection() {
-  const { startFullscreen, keepAwake } = getSettings()
+  const { startFullscreen, keepAwake, language } = getSettings()
   return `
     <div class="settings-block">
-      <h2 class="settings-block__title">Pantalla</h2>
+      <h2 class="settings-block__title">${t('settings.general.language')}</h2>
+      <label class="field">
+        <span class="field__label">${t('settings.general.defaultLanguage')}</span>
+        <select class="input w-72" data-default-language>
+          ${LANGUAGES.map((l) => `<option value="${l.code}" ${l.code === language ? 'selected' : ''}>${l.name}</option>`).join('')}
+        </select>
+      </label>
+    </div>
+    <div class="settings-block">
+      <h2 class="settings-block__title">${t('settings.general.screen')}</h2>
       <div class="flex flex-col gap-3">
-        ${toggle('startFullscreen', 'Abrir la app a pantalla completa', startFullscreen)}
-        ${toggle('keepAwake', 'Evitar que la pantalla se apague durante un partido', keepAwake)}
+        ${toggle('startFullscreen', t('settings.general.fullscreen'), startFullscreen)}
+        ${toggle('keepAwake', t('settings.general.keepAwake'), keepAwake)}
       </div>
     </div>
     <div class="settings-block">
-      <h2 class="settings-block__title">Atajos de teclado en el partido</h2>
+      <h2 class="settings-block__title">${t('settings.general.shortcuts')}</h2>
       <dl class="shortcuts">
-        <dt><kbd>Q</kbd> / <kbd>A</kbd></dt><dd>Sumar / restar gol al jugador 1</dd>
-        <dt><kbd>P</kbd> / <kbd>L</kbd></dt><dd>Sumar / restar gol al jugador 2</dd>
-        <dt><kbd>Espacio</kbd></dt><dd>Iniciar, pausar o reanudar el reloj</dd>
-        <dt><kbd>⌃</kbd> <kbd>⌘</kbd> <kbd>F</kbd></dt><dd>Pantalla completa (macOS)</dd>
+        <dt><kbd>Q</kbd> / <kbd>A</kbd></dt><dd>${t('settings.general.keysPlayer1')}</dd>
+        <dt><kbd>P</kbd> / <kbd>L</kbd></dt><dd>${t('settings.general.keysPlayer2')}</dd>
+        <dt><kbd>${t('settings.general.space')}</kbd></dt><dd>${t('settings.general.keysSpace')}</dd>
+        <dt><kbd>⌃</kbd> <kbd>⌘</kbd> <kbd>F</kbd></dt><dd>${t('settings.general.keysFullscreen')}</dd>
       </dl>
     </div>`
 }
@@ -202,59 +219,70 @@ const RENDERERS = { teams: teamsSection, durations: durationsSection, sounds: so
 export function settingsView(container) {
   setBack(() => go('home'))
   let section = 'teams'
+  let root = null
+  let panel = null
   const draft = { name: '', colors: ['#e1261c', '#ffffff'], crest: null }
 
-  container.innerHTML = `
-    <section class="settings">
-      <h1 class="screen-title">Configuración</h1>
-      <div class="settings__layout">
-        <nav class="settings__nav" role="tablist">
-          ${SECTIONS.map((s) => `<button class="tab" type="button" role="tab" data-section="${s.id}">${s.label}</button>`).join('')}
-        </nav>
-        <div class="panel settings__panel" data-panel></div>
-      </div>
-    </section>
-  `
-  const root = container.firstElementChild
-  const panel = root.querySelector('[data-panel]')
+  function paint() {
+    container.innerHTML = `
+      <section class="settings">
+        <h1 class="screen-title">${t('settings.title')}</h1>
+        <div class="settings__layout">
+          <nav class="settings__nav" role="tablist">
+            ${SECTIONS.map((id) => `<button class="settings__nav-item" type="button" role="tab" data-section="${id}">${t(`settings.section.${id}`)}</button>`).join('')}
+          </nav>
+          <div class="panel settings__panel" data-panel></div>
+        </div>
+      </section>
+    `
+    root = container.firstElementChild
+    panel = root.querySelector('[data-panel]')
+    root.addEventListener('click', onClick)
+    root.addEventListener('input', onInput)
+    root.addEventListener('change', onChange)
+    render()
+  }
 
-  const render = () => {
+  function render() {
     root.querySelectorAll('[data-section]').forEach((b) => b.setAttribute('aria-selected', b.dataset.section === section))
     panel.innerHTML = RENDERERS[section](draft)
   }
 
+  const importMedia = (kind, multiple = false) =>
+    window.api.importMedia(kind, { multiple, label: t(kind === 'image' ? 'dialog.images' : 'dialog.audio') })
+
   /* --- Equipos --- */
 
   async function changeTeamCrest(id) {
-    const [file] = await window.api.importMedia('image')
+    const [file] = await importMedia('image')
     if (!file) return
-    await saveTeams(getTeams().map((t) => (t.id === id ? { ...t, crest: file.url } : t)))
+    await saveTeams(getTeams().map((team) => (team.id === id ? { ...team, crest: file.url } : team)))
     render()
   }
 
   async function restoreTeamCrest(id) {
-    const original = DEFAULT_TEAMS.find((t) => t.id === id)
-    await saveTeams(getTeams().map((t) => (t.id === id ? { ...t, crest: original.crest } : t)))
+    const original = DEFAULT_TEAMS.find((team) => team.id === id)
+    await saveTeams(getTeams().map((team) => (team.id === id ? { ...team, crest: original.crest } : team)))
     render()
   }
 
   async function deleteTeam(id) {
-    const team = getTeams().find((t) => t.id === id)
-    if (!(await confirmDialog('Eliminar equipo', `${team.name} dejará de estar disponible. Los partidos del historial no cambian.`, 'Eliminar'))) return
-    await saveTeams(getTeams().filter((t) => t.id !== id))
+    const team = getTeams().find((item) => item.id === id)
+    if (!(await confirmDialog(t('settings.teams.deleteTitle'), t('settings.teams.deleteBody', { team: teamName(team) }), t('history.deleteConfirm')))) return
+    await saveTeams(getTeams().filter((item) => item.id !== id))
     render()
   }
 
   async function addTeam() {
     const name = draft.name.trim()
-    if (!name) return toast('Escribe el nombre del equipo')
+    if (!name) return toast(t('settings.teams.nameRequired'))
     const teams = getTeams()
-    if (teams.some((t) => t.name.toLowerCase() === name.toLowerCase())) return toast('Ya existe un equipo con ese nombre')
+    if (teams.some((team) => [team.name, teamName(team)].some((n) => n.toLowerCase() === name.toLowerCase()))) return toast(t('settings.teams.duplicate'))
     let id = slugify(name) || 'equipo'
-    while (teams.some((t) => t.id === id)) id += '-2'
+    while (teams.some((team) => team.id === id)) id += '-2'
     await saveTeams([...teams, { id, name, colors: [...draft.colors], crest: draft.crest, builtin: false }])
     Object.assign(draft, { name: '', crest: null })
-    toast(`${name} añadido`)
+    toast(t('settings.teams.added', { team: name }))
     render()
   }
 
@@ -273,7 +301,7 @@ export function settingsView(container) {
   /* --- Sonidos y música --- */
 
   async function changeSound(key) {
-    const [file] = await window.api.importMedia('audio')
+    const [file] = await importMedia('audio')
     if (!file) return
     const previous = getSettings().sounds[key]
     await updateSettings({ sounds: { ...getSettings().sounds, [key]: file.url } })
@@ -296,64 +324,69 @@ export function settingsView(container) {
 
   /* --- Eventos --- */
 
-  root.addEventListener('click', async (e) => {
-    const t = (sel) => e.target.closest(sel)
-    const teamId = t('[data-team]')?.dataset.team
-    const soundKey = t('[data-sound]')?.dataset.sound
-    const trackIndex = Number(t('[data-track]')?.dataset.track)
+  async function onClick(e) {
+    const el = (sel) => e.target.closest(sel)
+    const teamId = el('[data-team]')?.dataset.team
+    const soundKey = el('[data-sound]')?.dataset.sound
+    const trackIndex = Number(el('[data-track]')?.dataset.track)
     const tracks = getSettings().music.tracks
 
-    if (t('[data-section]')) {
-      section = t('[data-section]').dataset.section
+    if (el('[data-section]')) {
+      section = el('[data-section]').dataset.section
       return render()
     }
 
-    if (t('[data-team-crest]')) return changeTeamCrest(teamId)
-    if (t('[data-team-restore]')) return restoreTeamCrest(teamId)
-    if (t('[data-team-delete]')) return deleteTeam(teamId)
-    if (t('[data-new-team-add]')) return addTeam()
-    if (t('[data-new-team-crest]')) {
-      const [file] = await window.api.importMedia('image')
+    if (el('[data-team-crest]')) return changeTeamCrest(teamId)
+    if (el('[data-team-restore]')) return restoreTeamCrest(teamId)
+    if (el('[data-team-delete]')) return deleteTeam(teamId)
+    if (el('[data-new-team-add]')) return addTeam()
+    if (el('[data-new-team-crest]')) {
+      const [file] = await importMedia('image')
       if (file) draft.crest = file.url
       return render()
     }
-    if (t('[data-new-team-crest-clear]')) {
+    if (el('[data-new-team-crest-clear]')) {
       draft.crest = null
       return render()
     }
 
-    if (t('[data-duration-remove]')) {
-      const value = Number(t('[data-duration-remove]').dataset.durationRemove)
+    if (el('[data-duration-remove]')) {
+      const value = Number(el('[data-duration-remove]').dataset.durationRemove)
       return saveDurations(getSettings().durations.filter((d) => d !== value))
     }
-    if (t('[data-duration-add]')) {
+    if (el('[data-duration-add]')) {
       const value = Number(panel.querySelector('[data-duration-input]').value)
-      if (!Number.isInteger(value) || value < 1 || value > MAX_DURATION) return toast(`Introduce un número entero entre 1 y ${MAX_DURATION}`)
+      if (!Number.isInteger(value) || value < 1 || value > MAX_DURATION) return toast(t('settings.durations.invalid', { max: MAX_DURATION }))
       return saveDurations([...getSettings().durations, value])
     }
-    if (t('[data-duration-reset]')) return saveDurations(DEFAULT_SETTINGS.durations, DEFAULT_SETTINGS.defaultDuration)
+    if (el('[data-duration-reset]')) return saveDurations(DEFAULT_SETTINGS.durations, DEFAULT_SETTINGS.defaultDuration)
 
-    if (t('[data-sound-play]')) return previewSound(soundKey)
-    if (t('[data-sound-change]')) return changeSound(soundKey)
-    if (t('[data-sound-reset]')) return resetSound(soundKey)
+    if (el('[data-sound-play]')) return previewSound(soundKey)
+    if (el('[data-sound-change]')) return changeSound(soundKey)
+    if (el('[data-sound-reset]')) return resetSound(soundKey)
 
-    if (t('[data-track-add]')) {
-      const files = await window.api.importMedia('audio', true)
+    if (el('[data-track-add]')) {
+      const files = await importMedia('audio', true)
       if (files.length) return saveTracks([...tracks, ...files])
     }
-    if (t('[data-track-move]')) {
-      const to = trackIndex + Number(t('[data-track-move]').dataset.trackMove)
+    if (el('[data-track-move]')) {
+      const to = trackIndex + Number(el('[data-track-move]').dataset.trackMove)
       const next = [...tracks]
       ;[next[trackIndex], next[to]] = [next[to], next[trackIndex]]
       return saveTracks(next)
     }
-    if (t('[data-track-remove]')) {
+    if (el('[data-track-restore]')) {
+      if (!(await confirmDialog(t('settings.music.restoreDefault'), t('settings.music.restoreBody'), t('settings.music.restoreConfirm')))) return
+      tracks.forEach((track) => window.api.removeMedia(track.url))
+      return saveTracks([])
+    }
+    if (el('[data-track-remove]')) {
       window.api.removeMedia(tracks[trackIndex].url)
       return saveTracks(tracks.filter((_, i) => i !== trackIndex))
     }
-  })
+  }
 
-  root.addEventListener('input', (e) => {
+  function onInput(e) {
     const { newTeam, volume } = e.target.dataset
     if (newTeam === 'name') draft.name = e.target.value
     if (newTeam === 'color0') draft.colors[0] = e.target.value
@@ -366,9 +399,9 @@ export function settingsView(container) {
       e.target.nextElementSibling.textContent = `${Math.round(e.target.value * 100)}%`
       applyVolumes()
     }
-  })
+  }
 
-  root.addEventListener('change', async (e) => {
+  async function onChange(e) {
     const { volume, toggle: key } = e.target.dataset
     if (volume) {
       await updateSettings({ volumes: { ...getSettings().volumes, [volume]: Number(e.target.value) } })
@@ -378,13 +411,18 @@ export function settingsView(container) {
       await updateSettings({ defaultDuration: Number(e.target.value) })
       render()
     }
+    if (e.target.matches('[data-default-language]')) {
+      await updateSettings({ language: e.target.value })
+      setLanguage(e.target.value)
+    }
     if (key === 'shuffle') await updateSettings({ music: { ...getSettings().music, shuffle: e.target.checked } })
     if (key === 'startFullscreen' || key === 'keepAwake') await updateSettings({ [key]: e.target.checked })
     if (key === 'musicMuted') {
       await updateSettings({ musicMuted: e.target.checked })
       e.target.checked ? music.stop() : music.start()
     }
-  })
+  }
 
-  render()
+  paint()
+  return { relocalize: paint }
 }

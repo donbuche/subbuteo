@@ -3,40 +3,45 @@ import { setBack } from '../components/topbar.js'
 import { playGoal, playTick, playWhistle } from '../core/audio.js'
 import { icons } from '../core/icons.js'
 import { go } from '../core/router.js'
-import { addMatch, getSettings } from '../core/state.js'
-import { esc, formatClock } from '../core/utils.js'
+import { addMatch, findTeam, getSettings } from '../core/state.js'
+import { esc, formatClock, teamName } from '../core/utils.js'
+import { t } from '../i18n/index.js'
 
 const KEYS = {
   q: ['home', 1], a: ['home', -1],
   p: ['away', 1], l: ['away', -1]
 }
 
-const STATUS_LABEL = {
-  idle: (half) => (half === 1 ? 'Preparados' : 'Segunda parte preparada'),
-  running: () => 'En juego',
-  paused: () => 'Pausado',
-  over: (half) => (half === 1 ? 'Descanso' : 'Tiempo cumplido')
+const STATUS_KEY = {
+  idle: (half) => `match.status.idle${half}`,
+  running: () => 'match.status.running',
+  paused: () => 'match.status.paused',
+  over: (half) => `match.status.over${half}`
 }
 
+// El nombre se traduce si el equipo sigue existiendo (selecciones por defecto)
+const sideName = (side) => (findTeam(side.teamId) ? teamName(findTeam(side.teamId)) : side.teamName)
+
 function scoreSide(key, side) {
+  const name = sideName(side)
   return `
     <section class="score-side" data-side="${key}">
       <header class="score-side__header">
         <img class="score-side__crest" src="${esc(side.crest)}" alt="" />
         <div class="min-w-0">
-          <h2 class="score-side__team">${esc(side.teamName)}</h2>
+          <h2 class="score-side__team">${esc(name)}</h2>
           <p class="score-side__player">${esc(side.player)}</p>
         </div>
       </header>
       <div class="scoreboard">
         <span class="scoreboard__value" data-score>0</span>
-        <button class="scoreboard__half scoreboard__half--up" type="button" data-delta="1" aria-label="Sumar gol a ${esc(side.teamName)}">
+        <button class="scoreboard__half scoreboard__half--up" type="button" data-delta="1" aria-label="${esc(t('match.addGoal', { team: name }))}">
           <span class="scoreboard__hint">+1</span>
         </button>
-        <button class="scoreboard__half scoreboard__half--down" type="button" data-delta="-1" aria-label="Restar gol a ${esc(side.teamName)}">
+        <button class="scoreboard__half scoreboard__half--down" type="button" data-delta="-1" aria-label="${esc(t('match.removeGoal', { team: name }))}">
           <span class="scoreboard__hint">−1</span>
         </button>
-        <span class="scoreboard__flash" aria-hidden="true">¡Gol!</span>
+        <span class="scoreboard__flash" aria-hidden="true">${t('match.goal')}</span>
       </div>
     </section>
   `
@@ -55,30 +60,35 @@ export function matchView(container, params) {
     saved: false
   }
   let ticker = null
-
-  container.innerHTML = `
-    <section class="match">
-      ${scoreSide('home', sides.home)}
-      <aside class="match__center">
-        <div class="half-indicator" role="status">
-          <span class="half-pill" data-half="1">1ª parte</span>
-          <span class="half-pill" data-half="2">2ª parte</span>
-        </div>
-        <div class="clock" data-clock>00:00</div>
-        <p class="clock__status" data-status></p>
-        <div class="match__controls">
-          <button class="btn-icon" type="button" data-action="reset" title="Reiniciar esta parte">${icons.reset}</button>
-          <button class="btn-icon btn-icon--lg" type="button" data-action="toggle"></button>
-          <button class="btn-icon" type="button" data-action="finish" title="Terminar el partido ahora">${icons.stop}</button>
-        </div>
-        <button class="btn btn--lg" type="button" data-action="phase" hidden></button>
-        <p class="match__keys">Teclado · Q / A jugador 1 · P / L jugador 2 · Espacio reloj</p>
-      </aside>
-      ${scoreSide('away', sides.away)}
-    </section>
-  `
-  const root = container.firstElementChild
+  let root = null
   const $ = (sel) => root.querySelector(sel)
+
+  function paint() {
+    container.innerHTML = `
+      <section class="match">
+        ${scoreSide('home', sides.home)}
+        <aside class="match__center">
+          <div class="half-indicator" role="status">
+            <span class="half-pill" data-half="1">${t('match.half1')}</span>
+            <span class="half-pill" data-half="2">${t('match.half2')}</span>
+          </div>
+          <div class="clock" data-clock>00:00</div>
+          <p class="clock__status" data-status></p>
+          <div class="match__controls">
+            <button class="btn-icon" type="button" data-action="reset" title="${t('match.reset')}" aria-label="${t('match.reset')}">${icons.reset}</button>
+            <button class="btn-icon btn-icon--primary btn-icon--lg" type="button" data-action="toggle"></button>
+            <button class="btn-icon" type="button" data-action="finish" title="${t('match.finishNow')}" aria-label="${t('match.finishNow')}">${icons.stop}</button>
+          </div>
+          <button class="btn btn--lg" type="button" data-action="phase" hidden></button>
+          <p class="match__keys">${t('match.keys')}</p>
+        </aside>
+        ${scoreSide('away', sides.away)}
+      </section>
+    `
+    root = container.firstElementChild
+    root.addEventListener('click', onClick)
+    renderAll()
+  }
 
   /* ---------- Render ---------- */
 
@@ -97,22 +107,23 @@ export function matchView(container, params) {
 
   function renderControls() {
     root.querySelectorAll('.half-pill').forEach((p) => p.classList.toggle('is-active', Number(p.dataset.half) === m.half))
-    $('[data-status]').textContent = STATUS_LABEL[m.status](m.half)
+    $('[data-status]').textContent = t(STATUS_KEY[m.status](m.half))
 
     const toggle = $('[data-action="toggle"]')
     const running = m.status === 'running'
     toggle.innerHTML = running ? icons.pause : icons.play
-    toggle.title = running ? 'Pausar' : m.status === 'paused' ? 'Reanudar' : `Iniciar ${m.half}ª parte`
+    toggle.title = running ? t('match.pause') : m.status === 'paused' ? t('match.resume') : t(`match.start${m.half}`)
+    toggle.setAttribute('aria-label', toggle.title)
     toggle.disabled = m.saved || (m.status === 'over' && m.half === 2)
     $('[data-action="reset"]').disabled = m.saved || m.status === 'idle'
     $('[data-action="finish"]').disabled = m.saved
 
     const phase = $('[data-action="phase"]')
     phase.hidden = m.saved || m.status !== 'over'
-    phase.textContent = m.half === 1 ? 'Iniciar 2ª parte' : 'Finalizar partido'
+    phase.innerHTML = m.half === 1 ? `${icons.play} ${t('match.start2')}` : t('match.finish')
   }
 
-  const renderAll = () => {
+  function renderAll() {
     renderScore('home')
     renderScore('away')
     renderClock()
@@ -169,9 +180,8 @@ export function matchView(container, params) {
   }
 
   async function resetHalf() {
-    const wasRunning = m.status === 'running'
-    if (wasRunning) pause()
-    const ok = await confirmDialog(`Reiniciar la ${m.half}ª parte`, 'El reloj volverá al tiempo inicial de esta parte. El marcador no cambia.', 'Reiniciar')
+    if (m.status === 'running') pause()
+    const ok = await confirmDialog(t('match.resetTitle'), t('match.resetBody'), t('match.resetConfirm'))
     if (!ok) return
     stopTicker()
     m.status = 'idle'
@@ -201,7 +211,7 @@ export function matchView(container, params) {
     if (m.saved) return
     if (early) {
       if (m.status === 'running') pause()
-      const ok = await confirmDialog('Terminar el partido', 'Se guardará el resultado actual en el historial.', 'Terminar y guardar')
+      const ok = await confirmDialog(t('match.finishTitle'), t('match.finishBody'), t('match.finishConfirm'))
       if (!ok) return
     }
     stopTicker()
@@ -214,8 +224,8 @@ export function matchView(container, params) {
       endedAt: new Date().toISOString(),
       duration,
       endedEarly: early,
-      home: { ...sides.home, score: m.score.home },
-      away: { ...sides.away, score: m.score.away }
+      home: { ...sides.home, teamName: sideName(sides.home), score: m.score.home },
+      away: { ...sides.away, teamName: sideName(sides.away), score: m.score.away }
     }
     await addMatch(record)
     renderAll()
@@ -224,9 +234,9 @@ export function matchView(container, params) {
 
   async function showResult(record) {
     const { home, away } = record
-    const winner = home.score === away.score ? 'Empate' : `Gana ${home.score > away.score ? home.player : away.player}`
+    const winner = home.score === away.score ? t('match.draw') : t('match.wins', { name: home.score > away.score ? home.player : away.player })
     const choice = await openModal({
-      title: 'Final del partido',
+      title: t('match.resultTitle'),
       dismissable: false,
       body: `
         <div class="result">
@@ -234,11 +244,11 @@ export function matchView(container, params) {
           <div class="result__score">${home.score}<span>–</span>${away.score}</div>
           <div class="result__side"><img src="${esc(away.crest)}" alt="" /><strong>${esc(away.teamName)}</strong><span>${esc(away.player)}</span></div>
         </div>
-        <p class="result__winner">${esc(winner)} · Guardado en el historial</p>`,
+        <p class="result__winner">${esc(winner)} · ${t('match.saved')}</p>`,
       actions: [
-        { label: 'Menú principal', value: 'home', variant: 'ghost' },
-        { label: 'Ver historial', value: 'history', variant: 'ghost' },
-        { label: 'Revancha', value: 'rematch' }
+        { label: t('match.toMenu'), value: 'home', variant: 'secondary' },
+        { label: t('match.toHistory'), value: 'history', variant: 'secondary' },
+        { label: t('match.rematch'), value: 'rematch' }
       ]
     })
     if (choice === 'rematch') go('match', params)
@@ -249,7 +259,7 @@ export function matchView(container, params) {
     const inProgress = !m.saved && (m.status !== 'idle' || m.half > 1 || m.score.home !== sides.home.initial || m.score.away !== sides.away.initial)
     if (inProgress) {
       if (m.status === 'running') pause()
-      const ok = await confirmDialog('Abandonar el partido', 'El partido no se guardará en el historial.', 'Abandonar')
+      const ok = await confirmDialog(t('match.leaveTitle'), t('match.leaveBody'), t('match.leaveConfirm'))
       if (!ok) return
     }
     go('home')
@@ -257,7 +267,7 @@ export function matchView(container, params) {
 
   /* ---------- Eventos ---------- */
 
-  root.addEventListener('click', (e) => {
+  function onClick(e) {
     const half = e.target.closest('[data-delta]')
     if (half) return changeScore(half.closest('[data-side]').dataset.side, Number(half.dataset.delta))
 
@@ -266,10 +276,11 @@ export function matchView(container, params) {
     if (action === 'reset') resetHalf()
     if (action === 'finish') finish({ early: true })
     if (action === 'phase') m.half === 1 ? startSecondHalf() : finish()
-  })
+  }
 
   const onKey = (e) => {
     if (document.querySelector('.modal') || e.metaKey || e.ctrlKey || e.repeat) return
+    if (e.target.closest?.('select, input, .lang-menu')) return
     if (e.code === 'Space') {
       e.preventDefault()
       // Evita que el botón con foco también reciba la pulsación de espacio
@@ -283,11 +294,14 @@ export function matchView(container, params) {
 
   setBack(leave)
   if (getSettings().keepAwake) window.api.keepAwake(true)
-  renderAll()
+  paint()
 
-  return () => {
-    stopTicker()
-    document.removeEventListener('keydown', onKey)
-    window.api.keepAwake(false)
+  return {
+    relocalize: paint,
+    cleanup() {
+      stopTicker()
+      document.removeEventListener('keydown', onKey)
+      window.api.keepAwake(false)
+    }
   }
 }

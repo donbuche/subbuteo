@@ -1,9 +1,20 @@
 import { app } from 'electron'
-import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs'
+import { copyFileSync, cpSync, existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { DEFAULT_STATE, DEFAULT_SETTINGS, DEFAULT_TEAMS } from '@shared/defaults.js'
 
 const STORE_KEYS = ['settings', 'teams', 'matches']
+
+// Carpeta de datos fija, independiente del productName, y su nombre en versiones anteriores
+export const DATA_FOLDER = 'Subbuteo Scoreboard'
+const DATA_FILE = 'app-data.json'
+const LEGACY = { folder: 'Subbuteo Marcador', file: 'subbuteo-data.json' }
+
+// Llamar antes de app.whenReady(). Si se arranca con --user-data-dir (p. ej. en pruebas), se respeta.
+export function configureDataDir() {
+  if (app.commandLine.hasSwitch('user-data-dir')) return
+  app.setPath('userData', join(app.getPath('appData'), DATA_FOLDER))
+}
 
 let state = null
 
@@ -18,7 +29,20 @@ export function mediaDir() {
 }
 
 function storeFile() {
-  return join(dataDir(), 'subbuteo-data.json')
+  return join(dataDir(), DATA_FILE)
+}
+
+// Primera ejecución tras el cambio de ruta: copia los datos de la ubicación antigua.
+// La carpeta antigua no se borra, por si hubiera que volver atrás.
+function migrateLegacyData() {
+  if (existsSync(storeFile())) return
+  const legacyDir = join(app.getPath('appData'), LEGACY.folder)
+  const legacyFile = join(legacyDir, LEGACY.file)
+  if (!existsSync(legacyFile)) return
+  mkdirSync(dataDir(), { recursive: true })
+  copyFileSync(legacyFile, storeFile())
+  const legacyMedia = join(legacyDir, 'media')
+  if (existsSync(legacyMedia)) cpSync(legacyMedia, join(dataDir(), 'media'), { recursive: true, force: false })
 }
 
 // Combina lo guardado con los valores por defecto, para que las nuevas
@@ -46,6 +70,7 @@ function migrate(saved) {
 }
 
 export function loadStore() {
+  migrateLegacyData()
   try {
     state = migrate(JSON.parse(readFileSync(storeFile(), 'utf8')))
   } catch {

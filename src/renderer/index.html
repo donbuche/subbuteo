@@ -6,9 +6,13 @@
       http-equiv="Content-Security-Policy"
       content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: media:; media-src 'self' media: blob:; font-src 'self' data:; connect-src 'self' media: ws:"
     />
-    <title>Subbuteo Marcador</title>
+    <title>Subbuteo Scoreboard</title>
   </head>
   <body>
+    <div class="splash" id="splash" aria-hidden="true">
+      <p class="splash__credit" data-splash-credit></p>
+      <img class="splash__logo" src="./images/ariane-logo.svg" alt="Ariane webdesign" />
+    </div>
     <div id="app" class="app">
       <header class="topbar" id="topbar"></header>
       <main class="view" id="view"></main>

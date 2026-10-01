@@ -3,26 +3,35 @@ $pitch: var(--color-pitch);
 $pitch-dark: var(--color-pitch-dark);
 $pitch-light: var(--color-pitch-light);
 $red: var(--color-subbuteo-red);
+$red-light: var(--color-subbuteo-red-light);
 $red-dark: var(--color-subbuteo-red-dark);
+$red-deep: var(--color-subbuteo-red-deep);
 $ink: var(--color-ink);
 $cream: var(--color-cream);
+$line: var(--color-line);
 $paper: var(--color-paper);
 $gold: var(--color-gold);
 
 $font-sans: var(--font-sans);
 $font-display: var(--font-display);
+$font-score: var(--font-score);
 
-$border: 3px solid $ink;
-$hard-shadow: 8px 8px 0 rgb(0 0 0 / 0.35);
-$radius: 22px;
-$topbar-height: 72px;
+$radius: 28px;
+$topbar-height: 76px;
+$panel-shadow: 0 2px 6px rgb(0 0 0 / 0.12), 0 28px 50px -28px rgb(0 0 0 / 0.6);
+$red-gradient: linear-gradient(180deg, $red-light 0%, $red 48%, $red-dark 100%);
+$white-gradient: linear-gradient(180deg, #ffffff 0%, #f4efe4 100%);
+$ease: cubic-bezier(0.2, 0.8, 0.2, 1);
 
-// Texto rotulado al estilo del packaging: mayúsculas, itálica y ancho
-@mixin lettering($weight: 800) {
-  font-family: $font-sans;
+// Rotulado deportivo: condensada, mayúsculas y con aire
+@mixin display($weight: 700, $italic: false) {
+  font-family: $font-display;
   font-weight: $weight;
-  font-style: italic;
-  font-stretch: 112%;
+  @if $italic {
+    font-style: italic;
+  } @else {
+    font-style: normal;
+  }
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.06em;
 }

@@ -1,3 +1,10 @@
-@use 'base';
-@use 'components';
-@use 'screens';
+@use 'sass:meta';
+
+// En la capa "components" de Tailwind: las utilidades (w-72, mt-6…) pueden
+// sobrescribir estos estilos, y custom-styles.scss (sin capa) prevalece sobre todo.
+@layer components {
+  @include meta.load-css('base');
+  @include meta.load-css('components');
+  @include meta.load-css('screens');
+  @include meta.load-css('splash');
+}

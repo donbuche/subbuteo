@@ -1,58 +1,178 @@
-# Subbuteo Marcador
+<p align="center">
+  <img src="docs/subbuteo-logo.png" alt="Subbuteo" width="320" />
+</p>
 
-Marcador digital de escritorio para partidas de Subbuteo (fútbol de mesa). Electron + Vite (electron-vite), JavaScript vanilla, SCSS y Tailwind CSS v4.
+<h1 align="center">Subbuteo Scoreboard</h1>
 
-## Puesta en marcha
+<p align="center">
+  A desktop scoreboard for Subbuteo (table football) matches, inspired by the classic Subbuteo box.<br />
+  Tap to score, run the half-time clock and keep a history of every match.
+</p>
+
+<p align="center">
+  <img alt="Electron" src="https://img.shields.io/badge/Electron-44-47848F?logo=electron&logoColor=white" />
+  <img alt="Vite" src="https://img.shields.io/badge/Vite-7-646CFF?logo=vite&logoColor=white" />
+  <img alt="JavaScript" src="https://img.shields.io/badge/JavaScript-vanilla-F7DF1E?logo=javascript&logoColor=black" />
+  <img alt="Sass" src="https://img.shields.io/badge/Sass-SCSS-CC6699?logo=sass&logoColor=white" />
+  <img alt="Tailwind CSS" src="https://img.shields.io/badge/Tailwind_CSS-4-06B6D4?logo=tailwindcss&logoColor=white" />
+  <img alt="SplideJS" src="https://img.shields.io/badge/SplideJS-4-E1261C" />
+  <img alt="Web Audio API" src="https://img.shields.io/badge/Web_Audio-API-FF6F00" />
+  <br />
+  <img alt="Platform" src="https://img.shields.io/badge/platform-macOS-000000?logo=apple&logoColor=white" />
+  <img alt="Languages" src="https://img.shields.io/badge/i18n-ES_%7C_CA_%7C_EN_%7C_IT-0F7A3A" />
+  <img alt="Node" src="https://img.shields.io/badge/node-%E2%89%A520-339933?logo=nodedotjs&logoColor=white" />
+  <img alt="License" src="https://img.shields.io/badge/license-private-lightgrey" />
+</p>
+
+---
+
+## Features
+
+- **Giant tap-to-score counters.** Tap the top half of a score to add a goal, the bottom half to take one away. Keyboard shortcuts work too (`Q`/`A` for player 1, `P`/`L` for player 2).
+- **Half-time clock.** A countdown for each half with a clear 1st / 2nd half indicator, plus pause, resume, restart-half and end-match controls. When a half runs out, the clock stops at zero and waits for you to start the next one.
+- **Match setup.** Pick each team from a fish-eye carousel (PES/FIFA style), enter the player names, choose the length of each half and, if you like, give one side a head start.
+- **Match history and standings.** Every finished match is saved with its date, time, teams, players and score. A player table ranks wins, draws, losses and goal difference. History can be exported to CSV.
+- **Sound.** A real referee's whistle for kick-off, pause and full time, cheering from the stands on every goal, and background music played in random order. A mute button sits in the top-right corner.
+- **Customisable.** Add your own teams and crests, change the preset match lengths, replace any sound effect and build your own music playlist.
+- **Four languages.** Castellano, Català, English and Italiano, switchable at any time from the flag selector, with a default language for startup.
+- **Made for full screen.** It opens full screen behind a splash screen and keeps the display awake during a match. The layout is designed for a 14" MacBook Pro.
+
+## Tech stack
+
+| Area | Technology |
+|---|---|
+| Desktop shell | [Electron](https://www.electronjs.org/) with a sandboxed renderer and a `contextBridge` preload |
+| Build | [electron-vite](https://electron-vite.org/) (Vite 7) and [electron-builder](https://www.electron.build/) |
+| UI | Vanilla JavaScript (ES modules), no framework |
+| Styles | SCSS plus [Tailwind CSS 4](https://tailwindcss.com/), with an empty `custom-styles.scss` for quick overrides |
+| Carousel | [SplideJS 4](https://splidejs.com/) |
+| Audio | Web Audio API for sound effects, `HTMLAudioElement` for the music playlist |
+| Fonts | Barlow, Barlow Condensed and Anton (bundled with Fontsource, so they work offline) |
+| Storage | A local JSON file in the user data folder, written atomically |
+
+## Getting started
+
+You need Node.js 20 or later.
 
 ```bash
 npm install
-npm run dev        # desarrollo con recarga en caliente
-npm run build      # compila a out/
-npm run dist:mac   # empaqueta .dmg en dist/ (también dist:win y dist:linux)
+npm run dev
 ```
 
-Necesitas Node 20 o superior.
+If the Electron binary didn't download during install, run `node node_modules/electron/install.js` once.
 
-## Estructura
+### Scripts
+
+| Command | Description |
+|---|---|
+| `npm run dev` | Start the app in development mode with hot reload |
+| `npm run build` | Build the main, preload and renderer bundles into `out/` |
+| `npm run preview` | Run the production build without packaging it |
+| `npm run dist:mac` | Build a `.dmg` installer in `dist/` |
+| `npm run dist:win` | Build a Windows installer (NSIS) |
+| `npm run dist:linux` | Build a Linux AppImage |
+
+## Installing on macOS
+
+1. Run `npm run dist:mac` and open the `.dmg` it creates in `dist/`.
+2. Drag **Subbuteo Scoreboard** into **Applications**.
+3. The app isn't signed with an Apple Developer certificate, so the first time you open it, right-click it and choose **Open → Open**. You can also allow it from **System Settings → Privacy & Security**.
+4. To keep it handy, right-click its Dock icon and choose **Options → Keep in Dock**. To put it on the desktop, drag it from Applications while holding **⌥ Option + ⌘ Command**, which creates an alias.
+
+Your history and settings are stored outside the app bundle, so they survive reinstalls and updates.
+
+## Project structure
 
 ```
 src/
-  main/            Proceso principal: ventanas, splash, IPC, protocolo media://
-    store.js       Persistencia en JSON (userData/subbuteo-data.json)
-  preload/         Puente seguro window.api entre renderer y main
-  shared/          Datos por defecto (equipos, duraciones) y generador de escudos
+  main/              Main process: window, IPC, media:// protocol
+    store.js         JSON persistence (app-data.json in the data folder)
+  preload/           Secure window.api bridge between renderer and main
+  shared/            Default teams and durations, crest generator for teams without an image
   renderer/
-    index.html     Ventana principal
-    splash.html    Splash de Ariane webdesign (2 s)
-    public/        Logotipos y escudos (sustituibles)
+    index.html       Single window, including the Ariane webdesign splash layer
+    public/
+      crests/        Team crests (SVG)
+      flags/         Flags for the language selector
+      images/        Subbuteo and Ariane webdesign logos
+      music/         Default background music
     src/
-      core/        Estado, router, audio (Web Audio), iconos, utilidades
-      components/  Barra superior, modales y avisos
-      views/       home, setup (nuevo partido), match, history, settings
-      styles/      tailwind.css, parciales SCSS y custom-styles.scss
+      core/          State, router, audio engine, icons, utilities
+      components/    Top bar, language menu, team carousel, modals, toasts
+      views/         home, setup, match, history, settings
+      i18n/          Translations: es.js, ca.js, en.js, it.js
+      assets/        Bundled sound effects and pitch lines
+      styles/        tailwind.css, SCSS partials and custom-styles.scss
+docs/                README logo and screenshots
 ```
 
-## Sustituir los recursos provisionales
+## Customisation
 
-Los logotipos y escudos son provisionales. Sustitúyelos manteniendo el nombre del archivo:
+### Teams and crests
 
-- `src/renderer/public/images/ariane-logo.svg`: splash
-- `src/renderer/public/images/subbuteo-logo.svg`: cabecera
-- `src/renderer/public/crests/<id-equipo>.svg`: escudos de los equipos por defecto
+The default teams live in `src/shared/defaults.js` and their crests in `src/renderer/public/crests/<team-id>.svg`. You can also add teams, upload crests or restore the originals from **Settings → Teams**. A team added without a crest gets one generated from its two colours.
 
-Si prefieres PNG, cambia la extensión en `src/shared/defaults.js`. `npm run crests` regenera los escudos provisionales.
+### Sounds and music
 
-Desde **Configuración** también puedes cambiar el escudo de cualquier equipo sin tocar el código.
+- The whistle and goal sounds are bundled in `src/renderer/src/assets/sounds/`. You can replace them from **Settings → Sounds**.
+- The default background music is every audio file in `src/renderer/public/music/`. It plays in random order until you add your own tracks in **Settings → Music**, which then replace it. Track titles come from the file names (`author-track-title-123456.mp3` becomes "Track Title · author").
+- Imported files are copied into the app's data folder and served through a private `media://` protocol.
 
-## Sonidos y música
+### Languages
 
-Por defecto, el silbato, la grada y el tema de fondo se sintetizan con Web Audio API, así que no hay archivos ni licencias. En **Configuración → Sonidos / Música** puedes asignar tus propios MP3/WAV/OGG/M4A y crear una lista de reproducción. Los archivos importados se copian a `userData/media/`.
+Use the flag selector in the top bar to switch language for the current session. Set the startup language in **Settings → General**. To add a language, create `src/renderer/src/i18n/<code>.js` with the same keys as `es.js` and register it in `i18n/index.js`.
 
-## Estilos
+### Styles
 
-- Los tokens de color y tipografía están en `@theme` dentro de `styles/tailwind.css`.
-- `styles/custom-styles.scss` se carga en último lugar y está vacío: es el sitio para los ajustes rápidos.
+- Theme tokens (colours and fonts) are defined in the `@theme` block of `styles/tailwind.css`.
+- The SCSS partials sit inside `@layer components`, so Tailwind utilities can override them.
+- `styles/custom-styles.scss` loads last, outside any layer. It's empty and meant for quick fixes.
 
-## Datos
+## Data
 
-El historial y la configuración se guardan en `~/Library/Application Support/Subbuteo Marcador/subbuteo-data.json` (macOS).
+Match history and settings are stored in:
+
+| OS | Location |
+|---|---|
+| macOS | `~/Library/Application Support/Subbuteo Scoreboard/app-data.json` |
+| Windows | `%APPDATA%\Subbuteo Scoreboard\app-data.json` |
+| Linux | `~/.config/Subbuteo Scoreboard/app-data.json` |
+
+Files you import (crests, sounds and music) are copied into a `media` folder next to it. Data from earlier versions, stored under `Subbuteo Marcador/subbuteo-data.json`, is copied over automatically on first launch.
+
+## Credits
+
+Designed and developed by **Joan Galtés i Moreno** ([joan@arianewebdesign.com](mailto:joan@arianewebdesign.com)) at [Ariane webdesign](https://arianewebdesign.com).
+
+See [CREDITS.md](CREDITS.md) for the source and licence of every sound, track, crest and logo. Team crests and the Subbuteo logo are trademarks of their respective owners and are used here for identification only.
+
+Developed with ♥ in Arenys de Munt.
+
+## Gallery
+
+<table>
+  <tr>
+    <td width="50%"><img src="docs/screenshots/01-splash.png" alt="Splash screen" /><p align="center"><sub>Splash screen</sub></p></td>
+    <td width="50%"><img src="docs/screenshots/02-home.jpg" alt="Home screen" /><p align="center"><sub>Home</sub></p></td>
+  </tr>
+  <tr>
+    <td><img src="docs/screenshots/03-new-match.jpg" alt="New match with the team carousels" /><p align="center"><sub>New match: fish-eye team carousels</sub></p></td>
+    <td><img src="docs/screenshots/04-match.jpg" alt="Scoreboard during a match" /><p align="center"><sub>Match: giant scores and half-time clock</sub></p></td>
+  </tr>
+  <tr>
+    <td><img src="docs/screenshots/05-goal.jpg" alt="Goal celebration" /><p align="center"><sub>Goal!</sub></p></td>
+    <td><img src="docs/screenshots/06-full-time.jpg" alt="Full-time result" /><p align="center"><sub>Full time</sub></p></td>
+  </tr>
+  <tr>
+    <td><img src="docs/screenshots/07-history.jpg" alt="Match history" /><p align="center"><sub>Match history</sub></p></td>
+    <td><img src="docs/screenshots/08-standings.jpg" alt="Player standings" /><p align="center"><sub>Player standings</sub></p></td>
+  </tr>
+  <tr>
+    <td><img src="docs/screenshots/09-settings-teams.jpg" alt="Team settings" /><p align="center"><sub>Settings: teams and crests</sub></p></td>
+    <td><img src="docs/screenshots/10-settings-music.jpg" alt="Music settings" /><p align="center"><sub>Settings: background music</sub></p></td>
+  </tr>
+  <tr>
+    <td><img src="docs/screenshots/11-languages.jpg" alt="Language selector with flags" /><p align="center"><sub>Language selector</sub></p></td>
+    <td></td>
+  </tr>
+</table>

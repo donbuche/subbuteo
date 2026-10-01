@@ -1,4 +1,5 @@
 import { crestDataUri, initialsFor } from '@shared/crest-svg.js'
+import { getLocale, hasKey, t } from '../i18n/index.js'
 
 export const esc = (value) =>
   String(value ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c])
@@ -16,10 +17,12 @@ export function formatClock(totalSeconds) {
   return `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`
 }
 
-const dateFmt = new Intl.DateTimeFormat('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' })
-const timeFmt = new Intl.DateTimeFormat('es-ES', { hour: '2-digit', minute: '2-digit' })
-export const formatDate = (iso) => dateFmt.format(new Date(iso))
-export const formatTime = (iso) => timeFmt.format(new Date(iso))
+export const formatDate = (iso) =>
+  new Intl.DateTimeFormat(getLocale(), { day: '2-digit', month: '2-digit', year: 'numeric' }).format(new Date(iso))
+export const formatTime = (iso) => new Intl.DateTimeFormat(getLocale(), { hour: '2-digit', minute: '2-digit' }).format(new Date(iso))
+
+// Las selecciones nacionales por defecto se traducen; los clubes mantienen su nombre
+export const teamName = (team) => (team?.builtin && hasKey(`teams.${team.id}`) ? t(`teams.${team.id}`) : team?.name ?? '')
 
 export const slugify = (text) =>
   String(text)

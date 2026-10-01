@@ -1,9 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 170" width="640" height="170">
-  <!-- Logotipo provisional. Sustituye este archivo por el logotipo oficial (mismo nombre). -->
-  <g font-family="Futura, 'Futura PT', 'Arial Black', Arial, sans-serif" font-weight="900" font-style="italic"
-     font-size="132" text-anchor="middle" letter-spacing="-2">
-    <text x="320" y="128" fill="#111111" stroke="#111111" stroke-width="22" stroke-linejoin="round">Subbuteo</text>
-    <text x="320" y="128" fill="#ffffff" stroke="#ffffff" stroke-width="12" stroke-linejoin="round">Subbuteo</text>
-    <text x="320" y="128" fill="#e1261c">Subbuteo</text>
-  </g>
-</svg>
