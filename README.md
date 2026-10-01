@@ -123,7 +123,7 @@ The default teams live in `src/shared/defaults.js` and their crests in `src/rend
 
 ### Sounds and music
 
-- The whistle and goal sounds are bundled in `src/renderer/src/assets/sounds/`. You can replace them from **Settings → Sounds**.
+- The whistle, goal and button-press sounds are bundled in `src/renderer/src/assets/sounds/`. You can replace the whistle and goal sounds from **Settings → Sounds**. The button-press sound plays at the effects volume.
 - The default background music is every audio file in `src/renderer/public/music/`. It plays in random order until you add your own tracks in **Settings → Music**, which then replace it. Track titles come from the file names (`author-track-title-123456.mp3` becomes "Track Title · author").
 - Imported files are copied into the app's data folder and served through a private `media://` protocol.
 

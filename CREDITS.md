@@ -13,6 +13,7 @@ Subbuteo Scoreboard was designed and built in Arenys de Munt, out of a love for 
 | File | Source | Author | Licence |
 |---|---|---|---|
 | `whistle.m4a` | [218318 splicesound referee-whistle-blow-gymnasium.wav](https://commons.wikimedia.org/wiki/File:218318_splicesound_referee-whistle-blow-gymnasium.wav) | SpliceSound | CC0 |
+| `button-press.mp3` | [Button Press (45980)](https://pixabay.com/sound-effects/) | freesound_community (Pixabay) | [Pixabay Content License](https://pixabay.com/service/license-summary/) |
 | `goal.m4a` (mix) | [Arrowhead Stadium crowd noise.wav](https://commons.wikimedia.org/wiki/File:Arrowhead_Stadium_crowd_noise.wav) | Kj1595 | CC BY-SA 4.0 |
 | | [Applause i.ogg](https://commons.wikimedia.org/wiki/File:Applause_i.ogg) | thore | Public domain |
 | | [Hurray.ogg](https://commons.wikimedia.org/wiki/File:Hurray.ogg) | starlite | Public domain |

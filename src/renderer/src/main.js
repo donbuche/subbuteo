@@ -14,7 +14,7 @@ import './styles/custom-styles.scss'
 
 import { mountTopbar } from './components/topbar.js'
 import { setAppReady } from './core/animate.js'
-import { music, preloadSounds } from './core/audio.js'
+import { initClickSound, music, preloadSounds } from './core/audio.js'
 import { go, registerView } from './core/router.js'
 import { getSettings, initState } from './core/state.js'
 import { sloganMarkup } from './components/slogan.js'
@@ -47,6 +47,7 @@ registerView('settings', settingsView)
 mountTopbar()
 go('home')
 preloadSounds()
+initClickSound()
 
 const splash = document.getElementById('splash')
 const studioStage = splash.querySelector('[data-stage="studio"]')
