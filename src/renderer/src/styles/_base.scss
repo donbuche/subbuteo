@@ -1,0 +1,105 @@
+@use 'tokens' as *;
+
+html,
+body {
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  margin: 0;
+  font-family: $font-sans;
+  color: $ink;
+  background-color: $pitch;
+  // Césped segado a franjas, como en la tapa de la caja
+  background-image: repeating-linear-gradient(90deg, $pitch 0 8.333vw, $pitch-light 8.333vw 16.666vw);
+  user-select: none;
+  -webkit-font-smoothing: antialiased;
+
+  // Líneas del campo
+  &::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: url('../assets/pitch-lines.svg') center / cover no-repeat;
+    pointer-events: none;
+  }
+}
+
+[hidden] {
+  display: none !important;
+}
+
+input,
+select {
+  user-select: text;
+}
+
+:focus-visible {
+  outline: 4px solid $gold;
+  outline-offset: 3px;
+}
+
+.app {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+
+  // Franja inferior roja, blanca y negra
+  &::after {
+    content: '';
+    position: absolute;
+    inset: auto 0 0;
+    height: 10px;
+    background: linear-gradient($red 0 60%, $paper 60% 80%, $ink 80%);
+    pointer-events: none;
+  }
+}
+
+.view {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 8px 40px 40px;
+}
+
+.icon {
+  width: 1.4em;
+  height: 1.4em;
+  flex-shrink: 0;
+}
+
+.screen-title {
+  @include lettering(900);
+  margin: 0 0 28px;
+  font-size: 2.6rem;
+  color: $paper;
+  text-shadow: 4px 4px 0 $ink;
+}
+
+.hint {
+  display: block;
+  font-size: 0.9rem;
+  color: rgb(17 17 17 / 0.6);
+}
+
+.tagline {
+  @include lettering(700);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 0;
+  font-size: 1.15rem;
+  color: $paper;
+  text-shadow: 2px 2px 0 rgb(0 0 0 / 0.4);
+
+  span {
+    padding: 4px 14px;
+    background: $red;
+    border: $border;
+    border-radius: 999px;
+    text-shadow: none;
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "name": "subbuteo-marcador",
+  "productName": "Subbuteo Marcador",
+  "version": "1.0.0",
+  "description": "Marcador digital para partidas de Subbuteo (fútbol de mesa)",
+  "author": "Ariane webdesign",
+  "license": "UNLICENSED",
+  "private": true,
+  "main": "./out/main/index.js",
+  "scripts": {
+    "dev": "electron-vite dev",
+    "build": "electron-vite build",
+    "preview": "electron-vite preview",
+    "crests": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/generate-crests.mjs",
+    "dist:mac": "electron-vite build && electron-builder --mac",
+    "dist:win": "electron-vite build && electron-builder --win",
+    "dist:linux": "electron-vite build && electron-builder --linux"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.3.3",
+    "electron": "^44.5.1",
+    "electron-builder": "^26.15.3",
+    "electron-vite": "^5.0.0",
+    "sass-embedded": "^1.105.1",
+    "tailwindcss": "^4.3.3",
+    "vite": "^7.3.6"
+  },
+  "dependencies": {
+    "@fontsource-variable/archivo": "^5.3.0",
+    "@fontsource/anton": "^5.3.0"
+  }
+}

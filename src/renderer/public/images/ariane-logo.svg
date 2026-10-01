@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 200" width="520" height="200">
+  <!-- Logotipo provisional. Sustituye este archivo por el logotipo oficial de Ariane webdesign (mismo nombre). -->
+  <g fill="none" stroke="#ffffff" stroke-width="7" stroke-linejoin="round">
+    <path d="M60 140 L110 40 L160 140"/>
+    <path d="M80 104 H140"/>
+  </g>
+  <circle cx="110" cy="40" r="9" fill="#e1261c"/>
+  <text x="190" y="104" fill="#ffffff" font-family="'Avenir Next', 'Helvetica Neue', Arial, sans-serif" font-weight="700"
+        font-size="58" letter-spacing="1">Ariane</text>
+  <text x="192" y="142" fill="#9a9a9a" font-family="'Avenir Next', 'Helvetica Neue', Arial, sans-serif" font-weight="400"
+        font-size="30" letter-spacing="9">WEBDESIGN</text>
+</svg>

@@ -1,0 +1,19 @@
+appId: com.arianewebdesign.subbuteo
+productName: Subbuteo Marcador
+directories:
+  buildResources: build
+  output: dist
+files:
+  - out/**/*
+  - package.json
+mac:
+  category: public.app-category.sports
+  target:
+    - dmg
+win:
+  target:
+    - nsis
+linux:
+  target:
+    - AppImage
+  category: Game
