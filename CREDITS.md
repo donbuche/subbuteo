@@ -45,7 +45,9 @@ Tracks from [Pixabay Music](https://pixabay.com/music/), used under the [Pixabay
 
 Downloaded from Wikipedia and Wikimedia Commons. They are trademarks of their respective clubs and federations: FC Barcelona, Atlético de Madrid, Arsenal FC, West Ham United FC, CF Badalona, UE Sant Andreu, the Royal Spanish Football Federation (RFEF), the Brazilian Football Confederation (CBF), the Argentine Football Association (AFA) and the Catalan Football Federation (FCF). They are used for identification only in an app for personal use. Check the usage rights before distributing it publicly.
 
-## Logos
+## Logos and icon
+
+- App icon (`build/icon.svg`, `build/icon.png`, `build/icon.icns`): original artwork made for Subbuteo Scoreboard.
 
 - `subbuteo-logo.png`: a trademark of its owner. Source: wearegames.es.
 - `ariane-logo.svg`: Ariane webdesign.
@@ -53,5 +55,5 @@ Downloaded from Wikipedia and Wikimedia Commons. They are trademarks of their re
 ## Fonts and libraries
 
 - [Barlow, Barlow Condensed](https://github.com/jpt/barlow) and [Anton](https://github.com/googlefonts/AntonFont) under the SIL Open Font License, bundled through [Fontsource](https://fontsource.org/).
-- [SplideJS](https://splidejs.com/) under the MIT licence.
+- [SplideJS](https://splidejs.com/) and [animate.css](https://animate.style/) under the MIT licence.
 - Flags of Spain, Catalonia, the United Kingdom and Italy, drawn as simple SVGs for the language selector.
