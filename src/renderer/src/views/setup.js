@@ -1,5 +1,6 @@
 import { toast } from '../components/modal.js'
 import { mountTeamCarousel, teamCarouselMarkup } from '../components/team-carousel.js'
+import { animate, enter } from '../core/animate.js'
 import { setBack } from '../components/topbar.js'
 import { icons } from '../core/icons.js'
 import { go } from '../core/router.js'
@@ -71,7 +72,7 @@ export function setupView(container) {
     carousels = []
   }
 
-  function paint() {
+  function paint({ animated = false } = {}) {
     destroyCarousels()
     const { durations } = getSettings()
     container.innerHTML = `
@@ -103,12 +104,27 @@ export function setupView(container) {
         teams: getTeams(),
         selectedId: config[key].teamId,
         onChange: (teamId) => {
+          const wasTaken = config[key].teamId === config[key === 'home' ? 'away' : 'home'].teamId
           config[key].teamId = teamId
           render()
+          const card = root.querySelector(`[data-side="${key}"]`)
+          animate(card.querySelector('[data-team-name]'), 'fadeIn', { duration: 320 })
+          const taken = card.querySelector('[data-taken]')
+          if (!taken.hidden && !wasTaken) animate(taken, 'headShake', { duration: 600 })
         }
       })
     )
     render()
+    if (animated) {
+      enter(root, [
+        ['.screen-title', 'fadeInDown', 0, 500],
+        ['[data-side="home"]', 'fadeInLeft', 80, 600],
+        ['.setup__center', 'fadeInUp', 160, 600],
+        ['[data-side="away"]', 'fadeInRight', 80, 600],
+        ['.vs-badge', 'zoomIn', 500, 500],
+        ['[data-action="start"]', 'pulse', 1100, 900]
+      ])
+    }
   }
 
   function render() {
@@ -172,6 +188,6 @@ export function setupView(container) {
     })
   }
 
-  paint()
-  return { relocalize: paint, cleanup: destroyCarousels }
+  paint({ animated: true })
+  return { relocalize: () => paint(), cleanup: destroyCarousels }
 }

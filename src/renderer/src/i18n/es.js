@@ -1,12 +1,15 @@
 export default {
   'lang.name': 'Castellano',
-  'splash.credit': 'Desarrollado por',
   'common.cancel': 'Cancelar',
   'common.accept': 'Aceptar',
   'common.back': 'Volver',
   'common.minutes': '{n} minutos',
   'common.min': '{n} min',
 
+  'app.quit': 'Salir de la app',
+  'app.quitTitle': 'Salir de la app',
+  'app.quitBody': 'El partido en curso no se guardará en el historial.',
+  'app.quitConfirm': 'Salir',
   'topbar.language': 'Idioma',
   'topbar.fullscreen': 'Pantalla completa',
   'topbar.exitFullscreen': 'Salir de pantalla completa',

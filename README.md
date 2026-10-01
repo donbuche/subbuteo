@@ -16,6 +16,7 @@
   <img alt="Sass" src="https://img.shields.io/badge/Sass-SCSS-CC6699?logo=sass&logoColor=white" />
   <img alt="Tailwind CSS" src="https://img.shields.io/badge/Tailwind_CSS-4-06B6D4?logo=tailwindcss&logoColor=white" />
   <img alt="SplideJS" src="https://img.shields.io/badge/SplideJS-4-E1261C" />
+  <img alt="animate.css" src="https://img.shields.io/badge/animate.css-4-FF5A45" />
   <img alt="Web Audio API" src="https://img.shields.io/badge/Web_Audio-API-FF6F00" />
   <br />
   <img alt="Platform" src="https://img.shields.io/badge/platform-macOS-000000?logo=apple&logoColor=white" />
@@ -32,10 +33,11 @@
 - **Half-time clock.** A countdown for each half with a clear 1st / 2nd half indicator, plus pause, resume, restart-half and end-match controls. When a half runs out, the clock stops at zero and waits for you to start the next one.
 - **Match setup.** Pick each team from a fish-eye carousel (PES/FIFA style), enter the player names, choose the length of each half and, if you like, give one side a head start.
 - **Match history and standings.** Every finished match is saved with its date, time, teams, players and score. A player table ranks wins, draws, losses and goal difference. History can be exported to CSV.
-- **Sound.** A real referee's whistle for kick-off, pause and full time, cheering from the stands on every goal, and background music played in random order. A mute button sits in the top-right corner.
+- **Sound.** A real referee's whistle for kick-off, pause and full time, cheering from the stands on every goal, and background music played in random order. The top-right corner holds the language selector and the full-screen, mute and quit buttons. Quitting during a match asks for confirmation first.
 - **Customisable.** Add your own teams and crests, change the preset match lengths, replace any sound effect and build your own music playlist.
 - **Four languages.** Castellano, Català, English and Italiano, switchable at any time from the flag selector, with a default language for startup.
-- **Made for full screen.** It opens full screen behind a splash screen and keeps the display awake during a match. The layout is designed for a 14" MacBook Pro.
+- **Lively, not flashy.** Screens fade between each other and their elements enter in sequence: the logo drops in, the "Subbuteo Scoreboard" title rises and its side rules open out, and goals, half time and the final result each get their own animation. It all switches off when macOS **Reduce motion** is on.
+- **Made for full screen.** It opens full screen behind two splash screens, Ariane webdesign and then the Subbuteo logo with the app title, in under 5 seconds in total, and keeps the display awake during a match. The layout is designed for a 14" MacBook Pro.
 
 ## Tech stack
 
@@ -46,6 +48,7 @@
 | UI | Vanilla JavaScript (ES modules), no framework |
 | Styles | SCSS plus [Tailwind CSS 4](https://tailwindcss.com/), with an empty `custom-styles.scss` for quick overrides |
 | Carousel | [SplideJS 4](https://splidejs.com/) |
+| Animations | [animate.css 4](https://animate.style/), with subtler entrance keyframes (`styles/animations.css`) |
 | Audio | Web Audio API for sound effects, `HTMLAudioElement` for the music playlist |
 | Fonts | Barlow, Barlow Condensed and Anton (bundled with Fontsource, so they work offline) |
 | Storage | A local JSON file in the user data folder, written atomically |
@@ -90,7 +93,7 @@ src/
   preload/           Secure window.api bridge between renderer and main
   shared/            Default teams and durations, crest generator for teams without an image
   renderer/
-    index.html       Single window, including the Ariane webdesign splash layer
+    index.html       Single window, including the two splash screens as an overlay
     public/
       crests/        Team crests (SVG)
       flags/         Flags for the language selector
@@ -107,6 +110,12 @@ docs/                README logo and screenshots
 ```
 
 ## Customisation
+
+### App icon
+
+<img src="docs/icon.png" alt="Subbuteo Scoreboard app icon" width="128" align="right" />
+
+The icon is an original illustration: a hand-painted Subbuteo figure on its base, large enough to read at Dock sizes, on a striped green pitch under a stadium floodlight. The editable source is `build/icon.svg`. electron-builder uses `build/icon.icns` for macOS and `build/icon.png` (1024 × 1024) for Windows and Linux. To regenerate the `.icns` after editing the SVG, export a 1024 px PNG and run `iconutil` on an `.iconset` with the 16–512 px sizes at @1x and @2x.
 
 ### Teams and crests
 
@@ -152,8 +161,11 @@ Developed with ♥ in Arenys de Munt.
 
 <table>
   <tr>
-    <td width="50%"><img src="docs/screenshots/01-splash.png" alt="Splash screen" /><p align="center"><sub>Splash screen</sub></p></td>
-    <td width="50%"><img src="docs/screenshots/02-home.jpg" alt="Home screen" /><p align="center"><sub>Home</sub></p></td>
+    <td width="50%"><img src="docs/screenshots/01-splash.png" alt="Ariane webdesign splash screen" /><p align="center"><sub>Splash: Ariane webdesign</sub></p></td>
+    <td width="50%"><img src="docs/screenshots/01b-splash-app.jpg" alt="Subbuteo Scoreboard splash screen" /><p align="center"><sub>Splash: Subbuteo Scoreboard</sub></p></td>
+  </tr>
+  <tr>
+    <td colspan="2"><img src="docs/screenshots/02-home.jpg" alt="Home screen" /><p align="center"><sub>Home</sub></p></td>
   </tr>
   <tr>
     <td><img src="docs/screenshots/03-new-match.jpg" alt="New match with the team carousels" /><p align="center"><sub>New match: fish-eye team carousels</sub></p></td>

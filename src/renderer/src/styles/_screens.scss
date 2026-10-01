@@ -13,7 +13,8 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-top: 6vh;
+    gap: 6px;
+    margin-top: 5vh;
   }
 
   // El PNG original es pequeño (268 px): no lo ampliamos más de la cuenta
@@ -62,6 +63,85 @@
       color: $red-light;
       filter: drop-shadow(0 0 4px rgb(242 73 59 / 0.6));
     }
+  }
+}
+
+/* ---------- Eslogan "Subbuteo Scoreboard" ---------- */
+
+.slogan {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  margin: 0;
+
+  &__text {
+    @include display(800, true);
+    position: relative;
+    padding: 0 0.12em;
+    font-size: clamp(1.9rem, 3vw, 2.75rem);
+    line-height: 1;
+    letter-spacing: 0.16em;
+    white-space: nowrap;
+    color: $paper;
+    // Sombra sencilla: lo justo para separar el blanco del fondo
+    text-shadow:
+      0 2px 0 rgb(0 0 0 / 0.3),
+      0 6px 18px rgb(0 0 0 / 0.4);
+
+    // Destello que recorre el texto cada pocos segundos
+    &::after {
+      content: attr(data-text);
+      position: absolute;
+      inset: 0;
+      padding: inherit;
+      color: transparent;
+      text-shadow: none;
+      background: linear-gradient(105deg, transparent 38%, rgb(255 255 255 / 0.95) 50%, transparent 62%) no-repeat;
+      background-size: 300% 100%;
+      background-position: 150% 0;
+      -webkit-background-clip: text;
+      background-clip: text;
+      pointer-events: none;
+      animation: slogan-shine 6s ease-in-out 2.6s infinite;
+    }
+  }
+
+  // Filetes laterales blancos que se despliegan desde el texto hacia fuera
+  &__rule {
+    width: clamp(40px, 6vw, 84px);
+    height: 3px;
+    background: $paper;
+    border-radius: 3px;
+    transform: scaleX(0);
+    transition: transform 650ms cubic-bezier(0.6, 0, 0.2, 1);
+
+    &--left {
+      transform-origin: right center;
+    }
+
+    &--right {
+      transform-origin: left center;
+    }
+
+    .is-entered & {
+      transform: scaleX(1);
+    }
+  }
+}
+
+@keyframes slogan-shine {
+  0% { background-position: 150% 0; }
+  28%, 100% { background-position: -50% 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .slogan__text::after {
+    animation: none;
+  }
+
+  .slogan__rule {
+    transition: none;
   }
 }
 

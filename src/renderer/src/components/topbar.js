@@ -1,4 +1,6 @@
+import { animate } from '../core/animate.js'
 import { music } from '../core/audio.js'
+import { canLeave } from '../core/router.js'
 import { icons } from '../core/icons.js'
 import { getSettings, onStateChange, updateSettings } from '../core/state.js'
 import { onLanguageChange, t } from '../i18n/index.js'
@@ -18,12 +20,14 @@ export function mountTopbar() {
       <div data-slot="language"></div>
       <button class="btn-glass" type="button" data-action="fullscreen"></button>
       <button class="btn-glass" type="button" data-action="music"></button>
+      <button class="btn-glass btn-glass--danger" type="button" data-action="quit">${icons.power}</button>
     </div>
   `
 
   const backBtn = bar.querySelector('[data-action="back"]')
   const fsBtn = bar.querySelector('[data-action="fullscreen"]')
   const musicBtn = bar.querySelector('[data-action="music"]')
+  const quitBtn = bar.querySelector('[data-action="quit"]')
   bar.querySelector('[data-slot="language"]').replaceWith(createLanguageMenu())
   let isFullscreen = false
 
@@ -44,10 +48,18 @@ export function mountTopbar() {
   const renderBack = () => {
     backBtn.title = t('common.back')
     backBtn.setAttribute('aria-label', t('common.back'))
+    quitBtn.title = t('app.quit')
+    quitBtn.setAttribute('aria-label', t('app.quit'))
   }
 
   backBtn.addEventListener('click', () => backHandler?.())
   fsBtn.addEventListener('click', () => window.api.toggleFullscreen())
+  quitBtn.addEventListener('click', async () => {
+    if (!(await canLeave())) return
+    music.stop()
+    await animate(document.getElementById('app'), 'fadeOut', { duration: 250 })
+    window.api.quit()
+  })
   musicBtn.addEventListener('click', async () => {
     const muted = !getSettings().musicMuted
     await updateSettings({ musicMuted: muted })

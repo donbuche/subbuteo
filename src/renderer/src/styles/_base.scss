@@ -11,21 +11,12 @@ body {
   font-family: $font-sans;
   font-size: 16px;
   color: $ink;
-  background-color: $pitch;
-  // Césped segado a franjas, con un viñeteado suave hacia los bordes
-  background-image:
-    radial-gradient(ellipse at center, transparent 45%, rgb(0 0 0 / 0.28) 100%),
-    repeating-linear-gradient(90deg, $pitch 0 8.333vw, $pitch-light 8.333vw 16.666vw);
+  @include pitch-background;
   user-select: none;
   -webkit-font-smoothing: antialiased;
 
-  // Líneas del campo
   &::before {
-    content: '';
     position: fixed;
-    inset: 0;
-    background: url('../assets/pitch-lines.svg') center / cover no-repeat;
-    pointer-events: none;
   }
 }
 
@@ -52,22 +43,13 @@ a {
   display: flex;
   flex-direction: column;
   height: 100vh;
-
-  // Franja inferior roja, blanca y negra, como en la caja
-  &::after {
-    content: '';
-    position: absolute;
-    inset: auto 0 0;
-    height: 8px;
-    background: linear-gradient($red 0 55%, $paper 55% 78%, $ink 78%);
-    pointer-events: none;
-  }
 }
 
 .view {
   position: relative;
   flex: 1;
   min-height: 0;
+  overflow-x: hidden;
   overflow-y: auto;
   padding: 4px 40px 44px;
 }
