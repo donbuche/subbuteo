@@ -115,7 +115,7 @@ docs/                README logo and screenshots
 
 <img src="docs/icon.png" alt="Subbuteo Scoreboard app icon" width="128" align="right" />
 
-The icon is an original illustration: a hand-painted Subbuteo figure on its base, standing on the centre spot of a pitch seen in perspective, under a stadium floodlight. The editable source is `build/icon.svg`. electron-builder uses `build/icon.icns` for macOS and `build/icon.png` (1024 × 1024) for Windows and Linux. To regenerate the `.icns` after editing the SVG, export a 1024 px PNG and run `iconutil` on an `.iconset` with the 16–512 px sizes at @1x and @2x.
+The icon is an original illustration: a hand-painted Subbuteo figure on its base, large enough to read at Dock sizes, on a striped green pitch under a stadium floodlight. The editable source is `build/icon.svg`. electron-builder uses `build/icon.icns` for macOS and `build/icon.png` (1024 × 1024) for Windows and Linux. To regenerate the `.icns` after editing the SVG, export a 1024 px PNG and run `iconutil` on an `.iconset` with the 16–512 px sizes at @1x and @2x.
 
 ### Teams and crests
 

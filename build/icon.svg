@@ -7,7 +7,7 @@
       <stop offset="0.45" stop-color="#14803f"/>
       <stop offset="1" stop-color="#1c9a4c"/>
     </linearGradient>
-    <radialGradient id="spot" cx="512" cy="560" r="420" gradientUnits="userSpaceOnUse">
+    <radialGradient id="spot" cx="512" cy="500" r="460" gradientUnits="userSpaceOnUse">
       <stop offset="0" stop-color="#fff" stop-opacity="0.38"/>
       <stop offset="0.45" stop-color="#fff" stop-opacity="0.10"/>
       <stop offset="1" stop-color="#fff" stop-opacity="0"/>
@@ -88,22 +88,6 @@
       <rect x="100" y="695.6" width="824" height="129.3" fill="#000" opacity="0.07"/>
     </g>
 
-    <!-- Fondo del campo en perspectiva: línea de gol, área grande, área pequeña y media luna.
-         Ampliado ×1,69 desde la línea de gol (misma perspectiva); trazos algo más finos que los cercanos -->
-    <g fill="none" stroke="#fff" stroke-opacity="0.42" stroke-linejoin="round" stroke-linecap="round" transform="translate(512 150) scale(1.69) translate(-512 -150)">
-      <line x1="80" y1="150" x2="944" y2="150" stroke-width="3"/>
-      <path d="M356 150 L332 246 L692 246 L668 150" stroke-width="3.3"/>
-      <path d="M452 150 L446 178 L578 178 L572 150" stroke-width="3"/>
-      <!-- Media luna: algo más abierta que la real para que asome tras los brazos del jugador -->
-      <path d="M424 246 Q512 300 600 246" stroke-width="3.4"/>
-    </g>
-
-    <!-- Líneas: medio campo y círculo central en perspectiva -->
-    <g fill="none" stroke="#fff" stroke-opacity="0.55" stroke-width="7">
-      <line x1="80" y1="700" x2="944" y2="700"/>
-      <ellipse cx="512" cy="700" rx="320" ry="104"/>
-    </g>
-
     <!-- Haz de foco de estadio sobre el jugador -->
     <path d="M452 100 L572 100 L700 660 L324 660 Z" fill="url(#beam)" filter="url(#blur18)"/>
 
@@ -111,8 +95,8 @@
     <rect x="100" y="100" width="824" height="824" fill="url(#spot)"/>
     <rect x="100" y="100" width="824" height="824" fill="url(#vignette)"/>
 
-    <!-- Conjunto peana + jugador, algo ampliado para que se lea a tamaños pequeños -->
-    <g transform="translate(512 650) scale(1.04) translate(-512 -650)">
+    <!-- Conjunto peana + jugador: protagonista, ocupa casi toda la altura útil del icono -->
+    <g transform="translate(512 520) scale(1.27) translate(-512 -476)">
     <!-- Sombras sobre el césped -->
     <ellipse cx="530" cy="740" rx="232" ry="44" fill="#000" opacity="0.45" filter="url(#blur18)"/>
 
