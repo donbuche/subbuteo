@@ -9,14 +9,6 @@ export default defineConfig({
   preload: {},
   renderer: {
     resolve: { alias: { '@shared': resolve('src/shared') } },
-    plugins: [tailwindcss()],
-    build: {
-      rollupOptions: {
-        input: {
-          index: resolve('src/renderer/index.html'),
-          splash: resolve('src/renderer/splash.html')
-        }
-      }
-    }
+    plugins: [tailwindcss()]
   }
 })

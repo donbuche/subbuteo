@@ -1,8 +1,9 @@
 import { el, esc } from '../core/utils.js'
+import { t } from '../i18n/index.js'
 
-// Modal genérico. `actions` = [{ label, value, variant }]; resuelve con el value pulsado
+// Modal genérico. `actions` = [{ label, value, variant: 'secondary' }]; resuelve con el value pulsado
 // (o null si se cierra con Escape). `body` admite HTML ya escapado.
-export function openModal({ title, body = '', actions = [{ label: 'Aceptar', value: true }], dismissable = true }) {
+export function openModal({ title, body = '', actions = [{ label: t('common.accept'), value: true }], dismissable = true }) {
   return new Promise((resolve) => {
     const root = document.getElementById('modal-root')
     const modal = el(`
@@ -11,7 +12,7 @@ export function openModal({ title, body = '', actions = [{ label: 'Aceptar', val
           <h2 class="modal__title" id="modal-title">${esc(title)}</h2>
           <div class="modal__body">${body}</div>
           <div class="modal__actions">
-            ${actions.map((a, i) => `<button type="button" class="btn ${a.variant === 'ghost' ? 'btn--ghost' : ''}" data-index="${i}">${esc(a.label)}</button>`).join('')}
+            ${actions.map((a, i) => `<button type="button" class="btn ${a.variant ? `btn--${a.variant}` : ''}" data-index="${i}">${esc(a.label)}</button>`).join('')}
           </div>
         </div>
       </div>
@@ -41,12 +42,12 @@ export function openModal({ title, body = '', actions = [{ label: 'Aceptar', val
   })
 }
 
-export async function confirmDialog(title, message, confirmLabel = 'Aceptar') {
+export async function confirmDialog(title, message, confirmLabel = t('common.accept')) {
   const result = await openModal({
     title,
     body: `<p>${esc(message)}</p>`,
     actions: [
-      { label: 'Cancelar', value: false, variant: 'ghost' },
+      { label: t('common.cancel'), value: false, variant: 'secondary' },
       { label: confirmLabel, value: true }
     ]
   })

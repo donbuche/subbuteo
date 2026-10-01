@@ -1,12 +1,12 @@
-import { app, BrowserWindow, dialog, ipcMain, net, powerSaveBlocker, protocol, shell } from 'electron'
+import { app, BrowserWindow, dialog, ipcMain, powerSaveBlocker, protocol, shell } from 'electron'
 import { randomUUID } from 'node:crypto'
-import { copyFileSync, existsSync, unlinkSync, writeFileSync } from 'node:fs'
+import { closeSync, copyFileSync, existsSync, openSync, readdirSync, readFileSync, readSync, statSync, unlinkSync, writeFileSync } from 'node:fs'
 import { basename, extname, join } from 'node:path'
-import { pathToFileURL } from 'node:url'
-import { getState, loadStore, mediaDir, setKey } from './store.js'
+import { configureDataDir, getState, loadStore, mediaDir, setKey } from './store.js'
 
-const SPLASH_DURATION = 2000
 const isMac = process.platform === 'darwin'
+
+configureDataDir()
 
 // Protocolo media:// para servir escudos, sonidos y música importados por el usuario
 protocol.registerSchemesAsPrivileged([
@@ -14,38 +14,11 @@ protocol.registerSchemesAsPrivileged([
 ])
 
 let mainWindow = null
-let splashWindow = null
 let awakeBlockerId = null
 
-function rendererUrl(page) {
-  if (!app.isPackaged && process.env.ELECTRON_RENDERER_URL) {
-    return { url: `${process.env.ELECTRON_RENDERER_URL}/${page}.html` }
-  }
-  return { file: join(__dirname, `../renderer/${page}.html`) }
-}
-
 function load(win, page) {
-  const target = rendererUrl(page)
-  return target.url ? win.loadURL(target.url) : win.loadFile(target.file)
-}
-
-function createSplash() {
-  splashWindow = new BrowserWindow({
-    width: 640,
-    height: 400,
-    frame: false,
-    resizable: false,
-    movable: false,
-    show: false,
-    center: true,
-    backgroundColor: '#000000',
-    webPreferences: { sandbox: true, contextIsolation: true }
-  })
-  load(splashWindow, 'splash')
-  return new Promise((resolve) => splashWindow.once('ready-to-show', () => {
-    splashWindow.show()
-    resolve()
-  }))
+  if (!app.isPackaged && process.env.ELECTRON_RENDERER_URL) return win.loadURL(`${process.env.ELECTRON_RENDERER_URL}/${page}.html`)
+  return win.loadFile(join(__dirname, `../renderer/${page}.html`))
 }
 
 function createMainWindow() {
@@ -55,8 +28,12 @@ function createMainWindow() {
     minWidth: 1100,
     minHeight: 700,
     show: false,
-    backgroundColor: '#0f6b34',
-    title: 'Subbuteo Marcador',
+    // Se crea directamente a pantalla completa y en negro: el splash se pinta dentro
+    // de esta misma ventana, así no hay salto de tamaño entre splash y app
+    fullscreen: getState().settings.startFullscreen,
+    fullscreenable: true,
+    backgroundColor: '#000000',
+    title: 'Subbuteo Scoreboard',
     ...(isMac ? { titleBarStyle: 'hiddenInset' } : {}),
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
@@ -73,36 +50,82 @@ function createMainWindow() {
 
   // Los enlaces externos se abren en el navegador, nunca dentro de la app
   mainWindow.webContents.setWindowOpenHandler(({ url }) => {
-    shell.openExternal(url)
+    if (url.startsWith('https://')) shell.openExternal(url)
     return { action: 'deny' }
   })
 
+  mainWindow.once('ready-to-show', () => {
+    mainWindow.show()
+    if (getState().settings.startFullscreen && !mainWindow.isFullScreen()) mainWindow.setFullScreen(true)
+  })
   load(mainWindow, 'index')
-  return new Promise((resolve) => mainWindow.once('ready-to-show', resolve))
+}
+
+// Hilo musical por defecto: los MP3 de src/renderer/public/music (en producción, copiados a out/renderer/music)
+function defaultMusicDir() {
+  if (!app.isPackaged && process.env.ELECTRON_RENDERER_URL) return join(app.getAppPath(), 'src/renderer/public/music')
+  return join(__dirname, '../renderer/music')
+}
+
+// Nombre de Pixabay "autor-01-titulo-del-tema-123456.mp3" -> "Titulo Del Tema · autor"
+function trackTitle(fileName) {
+  const parts = basename(fileName, extname(fileName)).split(/[-_]+/).filter(Boolean)
+  if (parts.length > 1 && /^\d{5,}$/.test(parts.at(-1))) parts.pop()
+  if (parts.length < 2) return parts.join(' ')
+  const author = parts.shift()
+  while (parts.length > 1 && /^\d{1,2}$/.test(parts[0])) parts.shift()
+  const title = parts.map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')
+  return `${title} · ${author}`
 }
 
 function registerMediaProtocol() {
+  // media://local/<archivo> = importado por el usuario; media://bundled/<archivo> = hilo musical por defecto
   protocol.handle('media', (request) => {
-    const name = basename(decodeURIComponent(new URL(request.url).pathname))
-    const file = join(mediaDir(), name)
+    const url = new URL(request.url)
+    const name = basename(decodeURIComponent(url.pathname))
+    const file = join(url.hostname === 'bundled' ? defaultMusicDir() : mediaDir(), name)
     if (!existsSync(file)) return new Response('Not found', { status: 404 })
-    return net.fetch(pathToFileURL(file).toString())
+    return fileResponse(file, request.headers.get('range'))
   })
 }
 
-const MEDIA_FILTERS = {
-  image: [{ name: 'Imágenes', extensions: ['png', 'jpg', 'jpeg', 'svg', 'webp', 'gif'] }],
-  audio: [{ name: 'Audio', extensions: ['mp3', 'wav', 'ogg', 'm4a', 'aac', 'flac'] }]
+const MIME_TYPES = {
+  mp3: 'audio/mpeg', m4a: 'audio/mp4', aac: 'audio/aac', ogg: 'audio/ogg', wav: 'audio/wav', flac: 'audio/flac',
+  png: 'image/png', jpg: 'image/jpeg', jpeg: 'image/jpeg', svg: 'image/svg+xml', webp: 'image/webp', gif: 'image/gif'
+}
+
+// Respuesta con tamaño y soporte de rangos, para que el audio tenga duración y se pueda buscar
+function fileResponse(file, range) {
+  const size = statSync(file).size
+  const headers = { 'Content-Type': MIME_TYPES[extname(file).slice(1).toLowerCase()] ?? 'application/octet-stream', 'Accept-Ranges': 'bytes' }
+  const match = /bytes=(\d*)-(\d*)/.exec(range ?? '')
+  if (!match) return new Response(readFileSync(file), { headers: { ...headers, 'Content-Length': String(size) } })
+
+  const start = match[1] ? Number(match[1]) : Math.max(0, size - Number(match[2]))
+  const end = match[1] && match[2] ? Math.min(Number(match[2]), size - 1) : size - 1
+  const body = Buffer.alloc(Math.max(0, end - start + 1))
+  const fd = openSync(file, 'r')
+  readSync(fd, body, 0, body.length, start)
+  closeSync(fd)
+  return new Response(body, {
+    status: 206,
+    headers: { ...headers, 'Content-Length': String(body.length), 'Content-Range': `bytes ${start}-${end}/${size}` }
+  })
+}
+
+const MEDIA_EXTENSIONS = {
+  image: ['png', 'jpg', 'jpeg', 'svg', 'webp', 'gif'],
+  audio: ['mp3', 'wav', 'ogg', 'm4a', 'aac', 'flac']
 }
 
 function registerIpc() {
   ipcMain.handle('store:get', () => getState())
   ipcMain.handle('store:set', (_e, key, value) => setKey(key, value))
 
-  ipcMain.handle('media:import', async (_e, { kind, multiple = false }) => {
+  ipcMain.handle('media:import', async (_e, { kind, multiple = false, label }) => {
     const result = await dialog.showOpenDialog(mainWindow, {
       properties: multiple ? ['openFile', 'multiSelections'] : ['openFile'],
-      filters: MEDIA_FILTERS[kind] ?? []
+      filters: [{ name: label || kind, extensions: MEDIA_EXTENSIONS[kind] ?? [] }]
     })
     if (result.canceled) return []
     return result.filePaths.map((source) => {
@@ -112,8 +135,17 @@ function registerIpc() {
     })
   })
 
+  ipcMain.handle('music:defaults', () => {
+    const dir = defaultMusicDir()
+    if (!existsSync(dir)) return []
+    return readdirSync(dir)
+      .filter((f) => MEDIA_EXTENSIONS.audio.includes(extname(f).slice(1).toLowerCase()))
+      .sort()
+      .map((f) => ({ url: `media://bundled/${encodeURIComponent(f)}`, name: trackTitle(f) }))
+  })
+
   ipcMain.handle('media:remove', (_e, url) => {
-    if (typeof url !== 'string' || !url.startsWith('media://')) return false
+    if (typeof url !== 'string' || !url.startsWith('media://local/')) return false
     const file = join(mediaDir(), basename(new URL(url).pathname))
     if (existsSync(file)) unlinkSync(file)
     return true
@@ -150,20 +182,10 @@ app.whenReady().then(async () => {
   registerMediaProtocol()
   registerIpc()
 
-  await createSplash()
-  const splashStart = Date.now()
-  await createMainWindow()
-  const remaining = Math.max(0, SPLASH_DURATION - (Date.now() - splashStart))
-
-  setTimeout(() => {
-    mainWindow.show()
-    if (getState().settings.startFullscreen) mainWindow.setFullScreen(true)
-    splashWindow?.close()
-    splashWindow = null
-  }, remaining)
+  createMainWindow()
 
   app.on('activate', () => {
-    if (BrowserWindow.getAllWindows().length === 0) createMainWindow().then(() => mainWindow.show())
+    if (BrowserWindow.getAllWindows().length === 0) createMainWindow()
   })
 })
 

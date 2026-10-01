@@ -6,16 +6,20 @@
 @source "../";
 
 @theme static {
-  --color-pitch: #0f7a3a;
-  --color-pitch-dark: #0a5a2a;
-  --color-pitch-light: #138a44;
+  --color-pitch: #127a3d;
+  --color-pitch-dark: #0b5c2c;
+  --color-pitch-light: #168a45;
   --color-subbuteo-red: #e1261c;
-  --color-subbuteo-red-dark: #b81b13;
-  --color-ink: #111111;
-  --color-cream: #f7f2e4;
+  --color-subbuteo-red-light: #f2493b;
+  --color-subbuteo-red-dark: #c41d14;
+  --color-subbuteo-red-deep: #8f150e;
+  --color-ink: #14171a;
+  --color-cream: #f8f4ea;
+  --color-line: #e2d9c6;
   --color-paper: #ffffff;
-  --color-gold: #f4c430;
+  --color-gold: #f6c343;
 
-  --font-sans: "Archivo Variable", "Helvetica Neue", Arial, sans-serif;
-  --font-display: "Anton", "Archivo Variable", Impact, sans-serif;
+  --font-sans: "Barlow", "Helvetica Neue", Arial, sans-serif;
+  --font-display: "Barlow Condensed", "Arial Narrow", sans-serif;
+  --font-score: "Anton", Impact, sans-serif;
 }

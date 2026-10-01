@@ -1,0 +1,59 @@
+// Carrusel de equipos con efecto "fish-eye" (estilo PES/FIFA), sobre SplideJS.
+// Cada escudo recibe data-d = distancia al centro; el CSS escala y atenúa según esa distancia.
+import Splide from '@splidejs/splide'
+import '@splidejs/splide/css/core'
+import { crestUrl, esc, teamName } from '../core/utils.js'
+import { t } from '../i18n/index.js'
+
+const MAX_DISTANCE = 3
+
+export function teamCarouselMarkup(teams) {
+  return `
+    <div class="team-carousel splide" aria-label="${esc(t('setup.team'))}">
+      <div class="splide__track">
+        <ul class="splide__list">
+          ${teams.map((team) => `
+            <li class="splide__slide team-carousel__slide" data-team-id="${esc(team.id)}">
+              <img class="team-carousel__crest" src="${esc(crestUrl(team))}" alt="${esc(teamName(team))}" draggable="false" />
+            </li>`).join('')}
+        </ul>
+      </div>
+    </div>`
+}
+
+export function mountTeamCarousel(el, { teams, selectedId, onChange }) {
+  const start = Math.max(0, teams.findIndex((team) => team.id === selectedId))
+  const splide = new Splide(el, {
+    type: 'loop',
+    focus: 'center',
+    fixedWidth: '124px',
+    gap: 0,
+    start,
+    speed: 450,
+    easing: 'cubic-bezier(0.2, 0.8, 0.2, 1)',
+    pagination: false,
+    keyboard: 'focused',
+    flickPower: 300,
+    updateOnMove: true,
+    i18n: { prev: t('setup.prevTeam'), next: t('setup.nextTeam'), carousel: t('setup.team'), slide: t('setup.team') }
+  })
+
+  const applyDistances = (center) => {
+    splide.Components.Slides.forEach(({ index, slide }) => {
+      slide.dataset.d = Math.min(Math.abs(index - center), MAX_DISTANCE)
+    })
+  }
+
+  splide.on('mounted', () => applyDistances(splide.index))
+  // destIndex incluye la posición de los clones, así el efecto también es correcto al dar la vuelta
+  splide.on('move', (_index, _prev, destIndex) => applyDistances(destIndex))
+  splide.on('moved', (index) => onChange(teams[index].id))
+  // Clic en un escudo lateral: desplazarse hasta él por el camino corto
+  splide.on('click', ({ index }) => {
+    const delta = index - splide.index
+    if (delta) splide.go(delta > 0 ? `+${delta}` : `-${-delta}`)
+  })
+
+  splide.mount()
+  return splide
+}

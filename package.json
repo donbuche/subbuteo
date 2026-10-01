@@ -1,8 +1,8 @@
 {
-  "name": "subbuteo-marcador",
-  "productName": "Subbuteo Marcador",
+  "name": "subbuteo-scoreboard",
+  "productName": "Subbuteo Scoreboard",
   "version": "1.0.0",
-  "description": "Marcador digital para partidas de Subbuteo (fútbol de mesa)",
+  "description": "Desktop scoreboard for Subbuteo (table football) matches",
   "author": "Ariane webdesign",
   "license": "UNLICENSED",
   "private": true,
@@ -11,7 +11,6 @@
     "dev": "electron-vite dev",
     "build": "electron-vite build",
     "preview": "electron-vite preview",
-    "crests": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/generate-crests.mjs",
     "dist:mac": "electron-vite build && electron-builder --mac",
     "dist:win": "electron-vite build && electron-builder --win",
     "dist:linux": "electron-vite build && electron-builder --linux"
@@ -26,7 +25,9 @@
     "vite": "^7.3.6"
   },
   "dependencies": {
-    "@fontsource-variable/archivo": "^5.3.0",
-    "@fontsource/anton": "^5.3.0"
+    "@fontsource/anton": "^5.3.0",
+    "@fontsource/barlow": "^5.3.0",
+    "@fontsource/barlow-condensed": "^5.3.0",
+    "@splidejs/splide": "^4.1.4"
   }
 }

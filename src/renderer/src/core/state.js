@@ -1,4 +1,4 @@
-// Copia en memoria del estado persistido por el proceso principal (JSON en userData).
+// Copia en memoria del estado persistido por el proceso principal (app-data.json en la carpeta de datos).
 const listeners = new Set()
 let state = null
 

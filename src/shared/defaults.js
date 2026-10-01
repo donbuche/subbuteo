@@ -15,6 +15,8 @@ export const DEFAULT_TEAMS = [
 ].map((team) => ({ ...team, builtin: true, crest: `crests/${team.id}.svg` }))
 
 export const DEFAULT_SETTINGS = {
+  // Idioma con el que se abre la app: es, ca, en, it
+  language: 'es',
   // Duración de cada parte, en minutos
   durations: [5, 10, 15, 20, 25, 30, 45],
   defaultDuration: 15,
@@ -22,9 +24,9 @@ export const DEFAULT_SETTINGS = {
   keepAwake: true,
   volumes: { effects: 0.8, music: 0.35 },
   musicMuted: false,
-  // null = sonido sintetizado por defecto; si no, URL media:// de un archivo importado
+  // null = sonido incluido en la app; si no, URL media:// de un archivo importado
   sounds: { goal: null, whistleStart: null, whistlePause: null, whistleEnd: null },
-  // Lista de reproducción. Vacía = tema sintetizado por defecto
+  // Lista de reproducción de música de fondo (vacía = sin música)
   music: { tracks: [], shuffle: false }
 }
 
