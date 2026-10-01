@@ -7,6 +7,7 @@ import '@fontsource/barlow-condensed/latin-700.css'
 import '@fontsource/barlow-condensed/latin-700-italic.css'
 import '@fontsource/barlow-condensed/latin-800-italic.css'
 import '@fontsource/anton/latin-400.css'
+import '@fontsource/racing-sans-one/latin-400.css'
 import './styles/tailwind.css'
 import './styles/main.scss'
 // Siempre la última: espacio para ajustes rápidos de estilos

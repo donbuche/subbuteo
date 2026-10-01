@@ -34,8 +34,10 @@
     }
   }
 
+  // Misma altura que los botones .btn-glass (44px); la rejilla lo centra con ellos
   &__logo {
-    height: 38px;
+    display: block;
+    height: 44px;
     filter: drop-shadow(0 3px 6px rgb(0 0 0 / 0.35));
 
     [data-view='home'] & {

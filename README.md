@@ -50,7 +50,7 @@
 | Carousel | [SplideJS 4](https://splidejs.com/) |
 | Animations | [animate.css 4](https://animate.style/), with subtler entrance keyframes (`styles/animations.css`) |
 | Audio | Web Audio API for sound effects, `HTMLAudioElement` for the music playlist |
-| Fonts | Barlow, Barlow Condensed and Anton (bundled with Fontsource, so they work offline) |
+| Fonts | Barlow, Barlow Condensed, Anton and Racing Sans One for the app title (bundled with Fontsource, so they work offline) |
 | Storage | A local JSON file in the user data folder, written atomically |
 
 ## Getting started

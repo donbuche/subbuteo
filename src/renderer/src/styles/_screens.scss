@@ -76,12 +76,15 @@
   margin: 0;
 
   &__text {
-    @include display(800, true);
+    // Racing Sans One: un solo peso y ya inclinada de serie (sin cursiva forzada)
     position: relative;
     padding: 0 0.12em;
+    font-family: $font-slogan;
+    font-weight: 400;
     font-size: clamp(1.9rem, 3vw, 2.75rem);
     line-height: 1;
-    letter-spacing: 0.16em;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
     white-space: nowrap;
     color: $paper;
     // Sombra sencilla: lo justo para separar el blanco del fondo
