@@ -1,0 +1,21 @@
+/* Tailwind v4 no admite preprocesadores, por eso vive en su propio .css.
+   Los tokens de @theme se exponen como variables CSS (--color-pitch, etc.)
+   y se reutilizan desde los parciales SCSS. */
+@import "tailwindcss";
+
+@source "../";
+
+@theme static {
+  --color-pitch: #0f7a3a;
+  --color-pitch-dark: #0a5a2a;
+  --color-pitch-light: #138a44;
+  --color-subbuteo-red: #e1261c;
+  --color-subbuteo-red-dark: #b81b13;
+  --color-ink: #111111;
+  --color-cream: #f7f2e4;
+  --color-paper: #ffffff;
+  --color-gold: #f4c430;
+
+  --font-sans: "Archivo Variable", "Helvetica Neue", Arial, sans-serif;
+  --font-display: "Anton", "Archivo Variable", Impact, sans-serif;
+}

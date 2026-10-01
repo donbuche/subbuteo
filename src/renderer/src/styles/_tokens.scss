@@ -1,0 +1,28 @@
+// Alias SCSS de los tokens definidos en tailwind.css (@theme)
+$pitch: var(--color-pitch);
+$pitch-dark: var(--color-pitch-dark);
+$pitch-light: var(--color-pitch-light);
+$red: var(--color-subbuteo-red);
+$red-dark: var(--color-subbuteo-red-dark);
+$ink: var(--color-ink);
+$cream: var(--color-cream);
+$paper: var(--color-paper);
+$gold: var(--color-gold);
+
+$font-sans: var(--font-sans);
+$font-display: var(--font-display);
+
+$border: 3px solid $ink;
+$hard-shadow: 8px 8px 0 rgb(0 0 0 / 0.35);
+$radius: 22px;
+$topbar-height: 72px;
+
+// Texto rotulado al estilo del packaging: mayúsculas, itálica y ancho
+@mixin lettering($weight: 800) {
+  font-family: $font-sans;
+  font-weight: $weight;
+  font-style: italic;
+  font-stretch: 112%;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}

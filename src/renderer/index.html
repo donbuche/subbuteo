@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: media:; media-src 'self' media: blob:; font-src 'self' data:; connect-src 'self' media: ws:"
+    />
+    <title>Subbuteo Marcador</title>
+  </head>
+  <body>
+    <div id="app" class="app">
+      <header class="topbar" id="topbar"></header>
+      <main class="view" id="view"></main>
+    </div>
+    <div id="modal-root"></div>
+    <script type="module" src="./src/main.js"></script>
+  </body>
+</html>
