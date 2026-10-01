@@ -37,7 +37,7 @@
 - **Customisable.** Add your own teams and crests, change the preset match lengths, replace any sound effect and build your own music playlist.
 - **Four languages.** Castellano, Català, English and Italiano, switchable at any time from the flag selector, with a default language for startup.
 - **Lively, not flashy.** Screens fade between each other and their elements enter in sequence: the logo drops in, the "Subbuteo Scoreboard" title rises and its side rules open out, and goals, half time and the final result each get their own animation. It all switches off when macOS **Reduce motion** is on.
-- **Made for full screen.** It opens full screen behind two splash screens, Ariane webdesign and then the Subbuteo logo with the app title, in about 7 seconds in total, and keeps the display awake during a match. The layout is designed for a 14" MacBook Pro.
+- **Made for full screen.** It opens full screen behind two splash screens, Ariane webdesign and then the Subbuteo logo with the app title, in about 9.5 seconds in total, and keeps the display awake during a match. The layout is designed for a 14" MacBook Pro.
 
 ## Tech stack
 
