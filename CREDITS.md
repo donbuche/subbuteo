@@ -42,6 +42,10 @@ Tracks from [Pixabay Music](https://pixabay.com/music/), used under the [Pixabay
 | `sound4stock-football-epic-anthem-560955.mp3` | Football Epic Anthem | sound4stock |
 | `soundsurfer-soccer-highlights-266225.mp3` | Soccer Highlights | soundsurfer |
 
+## Background photos (`src/renderer/public/backgrounds/`)
+
+Photos of Subbuteo games found online, with no author or licence recorded. They were cropped to 16:10, retouched (levels, contrast and saturation) and resized to 2560 × 1600 px. Like the crests, they are used in an app for personal use. Check their usage rights before distributing it publicly, and replace them or add their credits here.
+
 ## Team crests (`src/renderer/public/crests/`)
 
 Downloaded from Wikipedia and Wikimedia Commons. They are trademarks of their respective clubs and federations: FC Barcelona, Atlético de Madrid, Arsenal FC, West Ham United FC, CF Badalona, UE Sant Andreu, the Royal Spanish Football Federation (RFEF), the Brazilian Football Confederation (CBF), the Argentine Football Association (AFA) and the Catalan Football Federation (FCF). They are used for identification only in an app for personal use. Check the usage rights before distributing it publicly.
