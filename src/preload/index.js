@@ -6,6 +6,7 @@ contextBridge.exposeInMainWorld('api', {
   importMedia: (kind, { multiple = false, label } = {}) => ipcRenderer.invoke('media:import', { kind, multiple, label }),
   removeMedia: (url) => ipcRenderer.invoke('media:remove', url),
   getDefaultTracks: () => ipcRenderer.invoke('music:defaults'),
+  getDefaultBackgrounds: () => ipcRenderer.invoke('backgrounds:defaults'),
   saveTextFile: (defaultName, content, extension) =>
     ipcRenderer.invoke('file:save-text', { defaultName, content, extension }),
   toggleFullscreen: () => ipcRenderer.invoke('window:toggle-fullscreen'),

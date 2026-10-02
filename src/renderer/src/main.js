@@ -15,6 +15,7 @@ import './styles/custom-styles.scss'
 
 import { mountTopbar } from './components/topbar.js'
 import { setAppReady } from './core/animate.js'
+import { initBackground } from './core/background.js'
 import { initClickSound, music, preloadSounds } from './core/audio.js'
 import { go, registerView } from './core/router.js'
 import { getSettings, initState } from './core/state.js'
@@ -38,6 +39,7 @@ document.body.classList.add(`platform-${window.api.platform}`)
 await initState()
 initLanguage(getSettings().language)
 await music.loadDefaults()
+await initBackground()
 
 registerView('home', homeView)
 registerView('setup', setupView)

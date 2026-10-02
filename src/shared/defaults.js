@@ -27,7 +27,12 @@ export const DEFAULT_SETTINGS = {
   // null = sonido incluido en la app; si no, URL media:// de un archivo importado
   sounds: { goal: null, whistleStart: null, whistlePause: null, whistleEnd: null },
   // Lista de reproducción de música de fondo (vacía = sin música)
-  music: { tracks: [], shuffle: false }
+  music: { tracks: [], shuffle: false },
+  // Fondo de la app: null = césped dibujado con CSS; si no, ruta de un fondo de la
+  // galería (backgrounds/…) o URL media:// de la imagen propia
+  background: null,
+  // Imagen propia subida por el usuario (URL media://), elegida o no como fondo
+  customBackground: null
 }
 
 export const DEFAULT_STATE = {

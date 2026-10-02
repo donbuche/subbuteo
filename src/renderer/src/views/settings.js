@@ -3,13 +3,14 @@ import { confirmDialog, toast } from '../components/modal.js'
 import { setBack } from '../components/topbar.js'
 import { applyVolumes, music, previewSound } from '../core/audio.js'
 import { animate, enter, stagger } from '../core/animate.js'
+import { currentBackground, getBackgroundPresets } from '../core/background.js'
 import { icons } from '../core/icons.js'
 import { go } from '../core/router.js'
 import { getSettings, getTeams, saveTeams, updateSettings } from '../core/state.js'
 import { crestUrl, esc, slugify, teamName } from '../core/utils.js'
 import { LANGUAGES, setLanguage, t } from '../i18n/index.js'
 
-const SECTIONS = ['teams', 'durations', 'sounds', 'music', 'general']
+const SECTIONS = ['teams', 'durations', 'sounds', 'music', 'background', 'general']
 const SOUNDS = ['goal', 'whistleStart', 'whistlePause', 'whistleEnd']
 const MAX_DURATION = 90
 
@@ -183,6 +184,38 @@ function defaultMusicBlock() {
     </div>`
 }
 
+// Galería: el césped por defecto, los fondos incluidos y, si la hay, la imagen propia
+function backgroundSection() {
+  const { customBackground } = getSettings()
+  const current = currentBackground() ?? ''
+  const tile = (url, name, thumb) => `
+    <li>
+      <button class="bg-gallery__tile" type="button" data-bg-select="${esc(url)}" aria-pressed="${url === current}">
+        ${thumb}
+        <span class="bg-gallery__name">${esc(name)}</span>
+      </button>
+    </li>`
+  const photo = (url) => `<img class="bg-gallery__thumb" src="${esc(url)}" alt="" />`
+  return `
+    <div class="settings-block">
+      <h2 class="settings-block__title">${t('settings.background.gallery')}</h2>
+      <p class="hint mb-4">${t('settings.background.galleryHint')}</p>
+      <ul class="bg-gallery">
+        ${tile('', t('settings.background.default'), '<span class="bg-gallery__thumb bg-gallery__thumb--pitch"></span>')}
+        ${getBackgroundPresets().map((p) => tile(p.url, p.name, photo(p.url))).join('')}
+        ${customBackground ? tile(customBackground, t('settings.background.custom'), photo(customBackground)) : ''}
+      </ul>
+    </div>
+    <div class="settings-block">
+      <h2 class="settings-block__title">${t('settings.background.customTitle')}</h2>
+      <p class="hint mb-4">${t('settings.background.customHint')}</p>
+      <div class="flex gap-4 flex-wrap">
+        <button class="btn" type="button" data-bg-upload>${icons.upload} ${t(customBackground ? 'settings.background.change' : 'settings.background.upload')}</button>
+        ${customBackground ? `<button class="btn btn--outline-dark" type="button" data-bg-remove>${icons.trash} ${t('settings.background.remove')}</button>` : ''}
+      </div>
+    </div>`
+}
+
 function generalSection() {
   const { startFullscreen, keepAwake, language } = getSettings()
   return `
@@ -213,7 +246,7 @@ function generalSection() {
     </div>`
 }
 
-const RENDERERS = { teams: teamsSection, durations: durationsSection, sounds: soundsSection, music: musicSection, general: generalSection }
+const RENDERERS = { teams: teamsSection, durations: durationsSection, sounds: soundsSection, music: musicSection, background: backgroundSection, general: generalSection }
 
 /* ---------- Vista ---------- */
 
@@ -327,6 +360,24 @@ export function settingsView(container) {
     render()
   }
 
+  /* --- Fondo --- */
+
+  async function uploadBackground() {
+    const [file] = await importMedia('image')
+    if (!file) return
+    const previous = getSettings().customBackground
+    await updateSettings({ customBackground: file.url, background: file.url })
+    if (previous) window.api.removeMedia(previous)
+    render()
+  }
+
+  async function removeBackground() {
+    const { background, customBackground } = getSettings()
+    await updateSettings({ customBackground: null, background: background === customBackground ? null : background })
+    window.api.removeMedia(customBackground)
+    render()
+  }
+
   /* --- Eventos --- */
 
   async function onClick(e) {
@@ -370,6 +421,13 @@ export function settingsView(container) {
     if (el('[data-sound-play]')) return previewSound(soundKey)
     if (el('[data-sound-change]')) return changeSound(soundKey)
     if (el('[data-sound-reset]')) return resetSound(soundKey)
+
+    if (el('[data-bg-select]')) {
+      await updateSettings({ background: el('[data-bg-select]').dataset.bgSelect || null })
+      return render()
+    }
+    if (el('[data-bg-upload]')) return uploadBackground()
+    if (el('[data-bg-remove]')) return removeBackground()
 
     if (el('[data-track-add]')) {
       const files = await importMedia('audio', true)

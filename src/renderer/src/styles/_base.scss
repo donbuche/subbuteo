@@ -18,6 +18,19 @@ body {
   &::before {
     position: fixed;
   }
+
+  // Foto elegida en Configuración → Fondo (background.js pone la clase y --app-photo).
+  // Se mantiene el viñeteado del césped para que el contenido se lea bien, sin líneas del campo.
+  &.has-photo-bg {
+    background:
+      radial-gradient(ellipse at center, rgb(0 0 0 / 0.1) 45%, rgb(0 0 0 / 0.4) 100%),
+      var(--app-photo) center / cover no-repeat,
+      $pitch-dark;
+
+    &::before {
+      display: none;
+    }
+  }
 }
 
 [hidden] {
