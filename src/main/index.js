@@ -73,7 +73,7 @@ function bundledDir(name) {
 }
 const defaultMusicDir = () => bundledDir('music')
 
-// "estadio-de-noche.jpg" -> "Estadio de noche"
+// "night-stadium.jpg" -> "Night stadium" (nombre de reserva si no hay traducción)
 function imageTitle(fileName) {
   const words = basename(fileName, extname(fileName)).replace(/[-_]+/g, ' ').trim()
   return words.charAt(0).toUpperCase() + words.slice(1)
@@ -156,14 +156,15 @@ function registerIpc() {
       .map((f) => ({ url: `media://bundled/${encodeURIComponent(f)}`, name: trackTitle(f) }))
   })
 
-  // Fondos de la galería; la ruta es relativa a la página, como la de los escudos incluidos
+  // Fondos de la galería; la ruta es relativa a la página, como la de los escudos incluidos.
+  // El id (nombre del archivo sin extensión) sirve para traducir el nombre: backgrounds.<id>
   ipcMain.handle('backgrounds:defaults', () => {
     const dir = bundledDir('backgrounds')
     if (!existsSync(dir)) return []
     return readdirSync(dir)
       .filter((f) => MEDIA_EXTENSIONS.image.includes(extname(f).slice(1).toLowerCase()))
       .sort()
-      .map((f) => ({ url: `backgrounds/${encodeURIComponent(f)}`, name: imageTitle(f) }))
+      .map((f) => ({ id: basename(f, extname(f)), url: `backgrounds/${encodeURIComponent(f)}`, name: imageTitle(f) }))
   })
 
   ipcMain.handle('media:remove', (_e, url) => {

@@ -203,5 +203,13 @@ export default {
   'teams.espana': 'Spain',
   'teams.brasil': 'Brazil',
   'teams.argentina': 'Argentina',
-  'teams.catalunya': 'Catalonia'
+  'teams.catalunya': 'Catalonia',
+
+  'backgrounds.penalty-area': 'Attack in the box',
+  'backgrounds.cup-final': 'Cup final',
+  'backgrounds.about-to-shoot': 'About to shoot',
+  'backgrounds.counter-attack': 'Counter-attack',
+  'backgrounds.stadium': 'The stadium',
+  'backgrounds.the-ball': 'The ball',
+  'backgrounds.line-up': 'The line-up'
 }

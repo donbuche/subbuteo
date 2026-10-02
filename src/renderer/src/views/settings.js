@@ -3,7 +3,7 @@ import { confirmDialog, toast } from '../components/modal.js'
 import { setBack } from '../components/topbar.js'
 import { applyVolumes, music, previewSound } from '../core/audio.js'
 import { animate, enter, stagger } from '../core/animate.js'
-import { currentBackground, getBackgroundPresets } from '../core/background.js'
+import { currentBackground, getBackgroundPresets, presetName } from '../core/background.js'
 import { icons } from '../core/icons.js'
 import { go } from '../core/router.js'
 import { getSettings, getTeams, saveTeams, updateSettings } from '../core/state.js'
@@ -202,7 +202,7 @@ function backgroundSection() {
       <p class="hint mb-4">${t('settings.background.galleryHint')}</p>
       <ul class="bg-gallery">
         ${tile('', t('settings.background.default'), '<span class="bg-gallery__thumb bg-gallery__thumb--pitch"></span>')}
-        ${getBackgroundPresets().map((p) => tile(p.url, p.name, photo(p.url))).join('')}
+        ${getBackgroundPresets().map((p) => tile(p.url, presetName(p), photo(p.url))).join('')}
         ${customBackground ? tile(customBackground, t('settings.background.custom'), photo(customBackground)) : ''}
       </ul>
     </div>

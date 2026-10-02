@@ -130,7 +130,7 @@ The default teams live in `src/shared/defaults.js` and their crests in `src/rend
 
 ### Backgrounds
 
-By default the app shows a striped pitch drawn in CSS (the `pitch-background` mixin in `styles/_tokens.scss`). In **Settings → Background** you can pick a photo from the gallery or upload your own image instead. The gallery is every image in `src/renderer/public/backgrounds/`, and each photo's name comes from its file name (`night-stadium.jpg` becomes "Night stadium"). Landscape photos at least 1920 px wide work best. The edges are darkened slightly so the content stays easy to read.
+By default the app shows a striped pitch drawn in CSS (the `pitch-background` mixin in `styles/_tokens.scss`). In **Settings → Background** you can pick a photo from the gallery or upload your own image instead. The gallery is every image in `src/renderer/public/backgrounds/`. Each photo's name is translated from the `backgrounds.<file name>` key in the i18n files (for example `backgrounds.line-up` for `line-up.jpg`). A photo without a translation uses its file name (`night-stadium.jpg` becomes "Night stadium"). The bundled photos are 2560 × 1600 px JPGs; the two small originals that had to be enlarged about 4× are blurred so their softness doesn't show. Landscape photos at least 1920 px wide work best. The edges are darkened slightly so the content stays easy to read.
 
 ### Languages
 
