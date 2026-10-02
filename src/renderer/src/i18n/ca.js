@@ -15,6 +15,7 @@ export default {
   'topbar.exitFullscreen': 'Surt de la pantalla completa',
   'topbar.musicOn': 'Activa la música',
   'topbar.musicOff': 'Silencia la música',
+  'topbar.nowPlaying': 'Ara sona',
   'topbar.noTracks': 'Afegeix temes a Configuració › Música per escoltar música de fons',
 
   'home.newMatch': 'Nou partit',

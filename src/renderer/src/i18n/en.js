@@ -15,6 +15,7 @@ export default {
   'topbar.exitFullscreen': 'Exit full screen',
   'topbar.musicOn': 'Turn music on',
   'topbar.musicOff': 'Mute music',
+  'topbar.nowPlaying': 'Now playing',
   'topbar.noTracks': 'Add tracks in Settings › Music to hear background music',
 
   'home.newMatch': 'New match',

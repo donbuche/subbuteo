@@ -15,6 +15,7 @@ export default {
   'topbar.exitFullscreen': 'Salir de pantalla completa',
   'topbar.musicOn': 'Activar música',
   'topbar.musicOff': 'Silenciar música',
+  'topbar.nowPlaying': 'Sonando ahora',
   'topbar.noTracks': 'Añade temas en Configuración › Música para escuchar música de fondo',
 
   'home.newMatch': 'Nuevo partido',

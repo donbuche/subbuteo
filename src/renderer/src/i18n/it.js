@@ -15,6 +15,7 @@ export default {
   'topbar.exitFullscreen': 'Esci da schermo intero',
   'topbar.musicOn': 'Attiva la musica',
   'topbar.musicOff': 'Disattiva la musica',
+  'topbar.nowPlaying': 'In riproduzione',
   'topbar.noTracks': 'Aggiungi brani in Impostazioni › Musica per ascoltare la musica di sottofondo',
 
   'home.newMatch': 'Nuova partita',

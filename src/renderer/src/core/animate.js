@@ -10,6 +10,12 @@ const ready = new Promise((resolve) => (markReady = resolve))
 export const appReady = () => ready
 export const setAppReady = () => markReady()
 
+// …y la entrada de la portada ha terminado (el primer aviso de música espera a esto)
+let markIntroDone
+const introDone = new Promise((resolve) => (markIntroDone = resolve))
+export const homeIntroDone = () => introDone
+export const setHomeIntroDone = () => markIntroDone()
+
 export function animate(el, effect, { delay = 0, duration } = {}) {
   if (!el) return Promise.resolve()
   return new Promise((resolve) => {

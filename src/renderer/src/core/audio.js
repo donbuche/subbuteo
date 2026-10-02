@@ -161,6 +161,7 @@ export const music = {
   duckTimer: null,
   duckFrame: 0,
   playing: false,
+  trackListeners: new Set(),
 
   defaults: [],
 
@@ -183,6 +184,16 @@ export const music = {
   init() {
     this.el.addEventListener('ended', () => this.next())
     this.el.addEventListener('error', () => this.tracks.length > 1 && this.next())
+    // Empieza a sonar un tema nuevo o se reanuda tras silenciar la música
+    this.el.addEventListener('playing', () => {
+      const track = this.tracks[this.index]
+      if (track) this.trackListeners.forEach((fn) => fn(track))
+    })
+  },
+
+  onTrackStart(fn) {
+    this.trackListeners.add(fn)
+    return () => this.trackListeners.delete(fn)
   },
 
   start() {
