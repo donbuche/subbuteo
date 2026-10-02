@@ -15,6 +15,7 @@ export default {
   'topbar.exitFullscreen': 'Esci da schermo intero',
   'topbar.musicOn': 'Attiva la musica',
   'topbar.musicOff': 'Disattiva la musica',
+  'topbar.nowPlaying': 'In riproduzione',
   'topbar.noTracks': 'Aggiungi brani in Impostazioni › Musica per ascoltare la musica di sottofondo',
 
   'home.newMatch': 'Nuova partita',
@@ -117,6 +118,7 @@ export default {
   'settings.section.durations': 'Durata',
   'settings.section.sounds': 'Suoni',
   'settings.section.music': 'Musica',
+  'settings.section.background': 'Sfondo',
   'settings.section.general': 'Generale',
   'settings.teams.available': 'Squadre disponibili',
   'settings.teams.changeCrest': 'Cambia stemma',
@@ -175,6 +177,15 @@ export default {
   'settings.music.down': 'Sposta giù',
   'settings.music.remove': 'Rimuovi',
   'settings.music.add': 'Aggiungi brani (MP3, WAV, OGG, M4A…)',
+  'settings.background.gallery': 'Sfondo dell’app',
+  'settings.background.galleryHint': 'Si vede dietro tutte le schermate, tranne gli splash iniziali.',
+  'settings.background.default': 'Prato (predefinito)',
+  'settings.background.custom': 'La tua immagine',
+  'settings.background.customTitle': 'Immagine personale',
+  'settings.background.customHint': 'Meglio una foto orizzontale larga almeno 1920 px. I bordi vengono scuriti un po’ perché tutto si legga bene.',
+  'settings.background.upload': 'Carica immagine',
+  'settings.background.change': 'Cambia immagine',
+  'settings.background.remove': 'Rimuovi immagine',
   'settings.general.language': 'Lingua',
   'settings.general.defaultLanguage': 'Lingua predefinita all’apertura dell’app',
   'settings.general.screen': 'Schermo',
@@ -193,5 +204,13 @@ export default {
   'teams.espana': 'Spagna',
   'teams.brasil': 'Brasile',
   'teams.argentina': 'Argentina',
-  'teams.catalunya': 'Catalogna'
+  'teams.catalunya': 'Catalogna',
+
+  'backgrounds.penalty-area': 'Attacco in area',
+  'backgrounds.cup-final': 'Finale di coppa',
+  'backgrounds.about-to-shoot': 'Pronto al tiro',
+  'backgrounds.counter-attack': 'Contropiede',
+  'backgrounds.stadium': 'Lo stadio',
+  'backgrounds.the-ball': 'Il pallone',
+  'backgrounds.line-up': 'La formazione'
 }

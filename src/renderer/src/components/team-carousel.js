@@ -38,14 +38,18 @@ export function mountTeamCarousel(el, { teams, selectedId, onChange }) {
     i18n: { prev: t('setup.prevTeam'), next: t('setup.nextTeam'), carousel: t('setup.team'), slide: t('setup.team') }
   })
 
+  // Distancia circular: al dar la vuelta, Splide anima hasta un clon (destIndex fuera de
+  // 0…n-1) y al acabar salta sin avisar al original. Contando también la distancia a una
+  // vuelta de distancia, clon y original reciben el mismo tamaño y el salto no se nota.
+  const n = teams.length
   const applyDistances = (center) => {
     splide.Components.Slides.forEach(({ index, slide }) => {
-      slide.dataset.d = Math.min(Math.abs(index - center), MAX_DISTANCE)
+      const d = Math.min(...[-n, 0, n].map((lap) => Math.abs(index - center + lap)))
+      slide.dataset.d = Math.min(d, MAX_DISTANCE)
     })
   }
 
   splide.on('mounted', () => applyDistances(splide.index))
-  // destIndex incluye la posición de los clones, así el efecto también es correcto al dar la vuelta
   splide.on('move', (_index, _prev, destIndex) => applyDistances(destIndex))
   splide.on('moved', (index) => onChange(teams[index].id))
   // Clic en un escudo lateral: desplazarse hasta él por el camino corto

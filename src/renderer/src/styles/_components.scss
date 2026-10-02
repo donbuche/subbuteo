@@ -34,8 +34,16 @@
     }
   }
 
+  // Ancla del aviso "Sonando ahora"
+  &__music {
+    position: relative;
+    display: flex;
+  }
+
+  // Misma altura que los botones .btn-glass (44px); la rejilla lo centra con ellos
   &__logo {
-    height: 38px;
+    display: block;
+    height: 44px;
     filter: drop-shadow(0 3px 6px rgb(0 0 0 / 0.35));
 
     [data-view='home'] & {
@@ -662,6 +670,132 @@ kbd {
     margin-top: 18px !important;
     font-weight: 700;
     text-align: center;
+  }
+}
+
+.now-playing {
+  // Se alinea por la derecha con el botón de apagar (botón de 44px + hueco de 10px)
+  // y el pico queda centrado bajo el botón de música
+  --shift: 54px;
+  --arrow: 9px;
+  --bg: rgb(8 12 18 / 0.78);
+  position: absolute;
+  top: calc(100% + 14px);
+  right: calc(var(--shift) * -1);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 250px;
+  max-width: 360px;
+  padding: 12px 20px 12px 12px;
+  color: $paper;
+  background: var(--bg);
+  border-radius: 18px;
+  box-shadow: 0 18px 36px -14px rgb(0 0 0 / 0.65);
+  backdrop-filter: blur(10px);
+  cursor: pointer;
+  -webkit-app-region: no-drag;
+
+  // Pico apuntando al botón de música
+  &::before {
+    content: '';
+    position: absolute;
+    bottom: 100%;
+    right: calc(var(--shift) + 22px - var(--arrow));
+    width: calc(var(--arrow) * 2);
+    height: var(--arrow);
+    background: var(--bg);
+    clip-path: polygon(50% 0, 100% 100%, 0 100%);
+  }
+
+  &__disc {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    flex-shrink: 0;
+    font-size: 1rem;
+    background: $red-gradient;
+    border-radius: 50%;
+    box-shadow: 0 0 0 3px rgb(255 255 255 / 0.12);
+  }
+
+  &__body {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    min-width: 0;
+  }
+
+  &__label {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: rgb(255 255 255 / 0.65);
+  }
+
+  &__title {
+    overflow: hidden;
+    font-size: 1.05rem;
+    font-weight: 700;
+    line-height: 1.2;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__author {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    overflow: hidden;
+    font-size: 0.82rem;
+    color: rgb(255 255 255 / 0.7);
+    white-space: nowrap;
+
+    .icon {
+      width: 1em;
+      height: 1em;
+    }
+  }
+
+  // Ecualizador: tres barras que suben y bajan a destiempo
+  &__eq {
+    display: inline-flex;
+    align-items: flex-end;
+    gap: 2px;
+    height: 10px;
+
+    i {
+      width: 3px;
+      height: 100%;
+      background: $gold;
+      border-radius: 1px;
+      transform-origin: bottom;
+      animation: now-playing-eq 900ms ease-in-out infinite;
+
+      &:nth-child(2) {
+        animation-delay: -300ms;
+      }
+
+      &:nth-child(3) {
+        animation-delay: -600ms;
+      }
+    }
+  }
+}
+
+@keyframes now-playing-eq {
+  0%, 100% { transform: scaleY(0.3); }
+  50% { transform: scaleY(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .now-playing__eq i {
+    animation: none;
   }
 }
 

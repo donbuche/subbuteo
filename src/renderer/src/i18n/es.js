@@ -15,6 +15,7 @@ export default {
   'topbar.exitFullscreen': 'Salir de pantalla completa',
   'topbar.musicOn': 'Activar música',
   'topbar.musicOff': 'Silenciar música',
+  'topbar.nowPlaying': 'Sonando ahora',
   'topbar.noTracks': 'Añade temas en Configuración › Música para escuchar música de fondo',
 
   'home.newMatch': 'Nuevo partido',
@@ -117,6 +118,7 @@ export default {
   'settings.section.durations': 'Duración',
   'settings.section.sounds': 'Sonidos',
   'settings.section.music': 'Música',
+  'settings.section.background': 'Fondo',
   'settings.section.general': 'General',
   'settings.teams.available': 'Equipos disponibles',
   'settings.teams.changeCrest': 'Cambiar escudo',
@@ -175,6 +177,15 @@ export default {
   'settings.music.down': 'Bajar',
   'settings.music.remove': 'Quitar',
   'settings.music.add': 'Añadir temas (MP3, WAV, OGG, M4A…)',
+  'settings.background.gallery': 'Fondo de la app',
+  'settings.background.galleryHint': 'Se ve detrás de todas las pantallas, excepto en los splash del inicio.',
+  'settings.background.default': 'Césped (por defecto)',
+  'settings.background.custom': 'Tu imagen',
+  'settings.background.customTitle': 'Imagen propia',
+  'settings.background.customHint': 'Mejor una foto horizontal de al menos 1920 px de ancho. Los bordes se oscurecen un poco para que todo se lea bien.',
+  'settings.background.upload': 'Subir imagen',
+  'settings.background.change': 'Cambiar imagen',
+  'settings.background.remove': 'Quitar imagen',
   'settings.general.language': 'Idioma',
   'settings.general.defaultLanguage': 'Idioma por defecto al abrir la app',
   'settings.general.screen': 'Pantalla',
@@ -193,5 +204,13 @@ export default {
   'teams.espana': 'España',
   'teams.brasil': 'Brasil',
   'teams.argentina': 'Argentina',
-  'teams.catalunya': 'Catalunya'
+  'teams.catalunya': 'Catalunya',
+
+  'backgrounds.penalty-area': 'Ataque al área',
+  'backgrounds.cup-final': 'Final de copa',
+  'backgrounds.about-to-shoot': 'A punto de chutar',
+  'backgrounds.counter-attack': 'Contraataque',
+  'backgrounds.stadium': 'El estadio',
+  'backgrounds.the-ball': 'El balón',
+  'backgrounds.line-up': 'La alineación'
 }

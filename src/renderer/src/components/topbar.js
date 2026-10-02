@@ -5,6 +5,7 @@ import { icons } from '../core/icons.js'
 import { getSettings, onStateChange, updateSettings } from '../core/state.js'
 import { onLanguageChange, t } from '../i18n/index.js'
 import { createLanguageMenu } from './language-menu.js'
+import { createNowPlaying } from './now-playing.js'
 import { toast } from './modal.js'
 
 let backHandler = null
@@ -19,7 +20,9 @@ export function mountTopbar() {
     <div class="topbar__side topbar__side--right">
       <div data-slot="language"></div>
       <button class="btn-glass" type="button" data-action="fullscreen"></button>
-      <button class="btn-glass" type="button" data-action="music"></button>
+      <div class="topbar__music">
+        <button class="btn-glass" type="button" data-action="music"></button>
+      </div>
       <button class="btn-glass btn-glass--danger" type="button" data-action="quit">${icons.power}</button>
     </div>
   `
@@ -29,6 +32,9 @@ export function mountTopbar() {
   const musicBtn = bar.querySelector('[data-action="music"]')
   const quitBtn = bar.querySelector('[data-action="quit"]')
   bar.querySelector('[data-slot="language"]').replaceWith(createLanguageMenu())
+  const nowPlaying = createNowPlaying()
+  musicBtn.after(nowPlaying.el)
+  music.onTrackStart(nowPlaying.show)
   let isFullscreen = false
 
   const renderMusic = () => {
@@ -68,7 +74,11 @@ export function mountTopbar() {
     else toast(t('topbar.noTracks'))
   })
 
-  onStateChange((key) => key === 'settings' && renderMusic())
+  onStateChange((key) => {
+    if (key !== 'settings') return
+    renderMusic()
+    if (getSettings().musicMuted) nowPlaying.hide()
+  })
   onLanguageChange(() => {
     renderBack()
     renderMusic()

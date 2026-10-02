@@ -1,6 +1,7 @@
 // Motor de audio. El silbato y la grada son grabaciones incluidas en la app
 // (ver CREDITS.md); si en Configuración se asigna un archivo, se usa ese.
 // La música de fondo es la lista del usuario o, si está vacía, el hilo musical por defecto.
+import clickSample from '../assets/sounds/button-press.mp3?inline'
 import goalSample from '../assets/sounds/goal.m4a?inline'
 import whistleSample from '../assets/sounds/whistle.m4a?inline'
 import { getSettings } from './state.js'
@@ -81,7 +82,7 @@ export async function playWhistle(type = 'start') {
 /* ---------- Grada ---------- */
 
 export async function playGoal() {
-  music.duck(4)
+  music.duck(3) // la grada dura ~4,6 s: la música empieza a volver mientras se apaga
   const custom = getSettings().sounds.goal
   if (custom) return playFile(custom)
   const buffer = await loadSample(goalSample)
@@ -103,25 +104,64 @@ export function playTick() {
   osc.stop(t + 0.15)
 }
 
+/* ---------- Pulsaciones ---------- */
+
+// Botones y demás elementos interactivos de toda la app. Los del marcador quedan
+// fuera ([data-delta]): ya suenan con la grada o con playTick().
+const CLICKABLE = 'button, a[href], select, [role="option"], .team-carousel__slide, .switch, input[type="color"]'
+const CLICK_OFFSET = 0.045 // la grabación empieza con ~45 ms de silencio
+let lastClick = 0
+
+export async function playClick() {
+  const buffer = await loadSample(clickSample)
+  const src = ctx.createBufferSource()
+  src.buffer = buffer
+  src.connect(fxBus)
+  src.start(ctx.currentTime, CLICK_OFFSET)
+}
+
+export function initClickSound() {
+  document.addEventListener(
+    'click',
+    (e) => {
+      const target = e.target.closest(CLICKABLE)
+      if (!target || target.matches(':disabled, [data-delta]')) return
+      // Un clic en una etiqueta genera otro en su control: que suene una sola vez
+      if (e.timeStamp - lastClick < 80) return
+      lastClick = e.timeStamp
+      playClick()
+    },
+    true
+  )
+}
+
 export function previewSound(key) {
   if (key === 'goal') return playGoal()
   playWhistle({ whistleStart: 'start', whistlePause: 'pause', whistleEnd: 'final' }[key])
 }
 
-// Precarga las muestras para que el primer gol suene sin retraso
+// Precarga las muestras para que el primer gol (o clic) suene sin retraso
 export function preloadSounds() {
   loadSample(whistleSample)
   loadSample(goalSample)
+  loadSample(clickSample)
 }
 
 /* ---------- Música de fondo ---------- */
+
+// Al marcar, la música baja al 60 % en 0,4 s y vuelve en 1,5 s mientras la grada se apaga
+const DUCK_LEVEL = 0.6
+const DUCK_FADE_IN = 400
+const DUCK_FADE_OUT = 1500
 
 export const music = {
   el: new Audio(),
   index: -1,
   duckFactor: 1,
   duckTimer: null,
+  duckFrame: 0,
   playing: false,
+  trackListeners: new Set(),
 
   defaults: [],
 
@@ -144,6 +184,16 @@ export const music = {
   init() {
     this.el.addEventListener('ended', () => this.next())
     this.el.addEventListener('error', () => this.tracks.length > 1 && this.next())
+    // Empieza a sonar un tema nuevo o se reanuda tras silenciar la música
+    this.el.addEventListener('playing', () => {
+      const track = this.tracks[this.index]
+      if (track) this.trackListeners.forEach((fn) => fn(track))
+    })
+  },
+
+  onTrackStart(fn) {
+    this.trackListeners.add(fn)
+    return () => this.trackListeners.delete(fn)
   },
 
   start() {
@@ -182,15 +232,26 @@ export const music = {
     if (wasPlaying || !getSettings().musicMuted) this.start()
   },
 
-  // Baja la música unos segundos para que se oiga bien la grada
+  // Baja un poco la música unos segundos para dar protagonismo a la grada,
+  // con fundidos suaves para que ni la bajada ni la vuelta se noten
   duck(seconds) {
     clearTimeout(this.duckTimer)
-    this.duckFactor = 0.25
-    this.syncVolume()
-    this.duckTimer = setTimeout(() => {
-      this.duckFactor = 1
+    this.fadeDuck(DUCK_LEVEL, DUCK_FADE_IN)
+    this.duckTimer = setTimeout(() => this.fadeDuck(1, DUCK_FADE_OUT), seconds * 1000)
+  },
+
+  fadeDuck(target, ms) {
+    cancelAnimationFrame(this.duckFrame)
+    const from = this.duckFactor
+    const start = performance.now()
+    const step = (now) => {
+      const p = Math.min(1, (now - start) / ms)
+      const eased = p * p * (3 - 2 * p) // smoothstep
+      this.duckFactor = from + (target - from) * eased
       this.syncVolume()
-    }, seconds * 1000)
+      if (p < 1) this.duckFrame = requestAnimationFrame(step)
+    }
+    this.duckFrame = requestAnimationFrame(step)
   },
 
   syncVolume() {

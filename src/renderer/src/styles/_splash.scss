@@ -2,7 +2,9 @@
 
 // Doble splash en una capa que cubre la ventana mientras arranca la app:
 // 1) Ariane webdesign, 2) logo de Subbuteo y eslogan, ambos sobre azul casi negro.
-// La secuencia completa dura menos de 5 s (ver main.js).
+// La secuencia completa dura unos 9,5 s (ver main.js).
+// Como en los créditos de una película, el contenido de cada etapa se acerca
+// despacio y sin pararse desde que aparece hasta que se ha desvanecido (splash-drift).
 .splash {
   position: fixed;
   inset: 0;
@@ -11,7 +13,7 @@
   -webkit-app-region: drag;
 
   &.is-leaving {
-    animation: splash-out 600ms ease-in forwards;
+    animation: splash-out 1300ms ease-in-out forwards;
   }
 
   &__stage {
@@ -24,7 +26,7 @@
     gap: 34px;
 
     &.is-leaving {
-      animation: splash-out 500ms ease-in forwards;
+      animation: splash-out 1000ms ease-in-out forwards;
     }
 
     // Ambas etapas comparten el fondo azul casi negro: entre una y otra solo cambia el contenido
@@ -50,6 +52,11 @@
       &:not(.is-shown) > * {
         visibility: hidden;
       }
+
+      // Acercamiento lento desde que aparece (appIn) hasta el final del splash (done)
+      &.is-shown {
+        animation: splash-drift 4700ms linear forwards;
+      }
     }
   }
 
@@ -57,7 +64,11 @@
     width: min(560px, 42vw);
     opacity: 0;
     transform: scale(0.96);
-    animation: splash-in 1000ms cubic-bezier(0.2, 0.8, 0.2, 1) 200ms forwards;
+    // splash-drift anima la propiedad scale, así que se suma a la entrada sin pisarla;
+    // dura desde que empieza a aparecer hasta que acaba de desvanecerse (studioOut + 1000 ms)
+    animation:
+      splash-in 1600ms cubic-bezier(0.2, 0.8, 0.2, 1) 400ms forwards,
+      splash-drift 4200ms linear 400ms forwards;
   }
 
   &__app-logo {
@@ -70,6 +81,26 @@
   to {
     opacity: 1;
     transform: none;
+  }
+}
+
+@keyframes splash-drift {
+  from {
+    scale: 1;
+  }
+  to {
+    scale: 1.07;
+  }
+}
+
+// Con "Reducir movimiento" no hay acercamiento: los logos solo aparecen y se desvanecen
+@media (prefers-reduced-motion: reduce) {
+  .splash__studio-logo {
+    animation: splash-in 1600ms ease-out 400ms forwards;
+  }
+
+  .splash__stage--app.is-shown {
+    animation: none;
   }
 }
 

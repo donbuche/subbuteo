@@ -1,6 +1,6 @@
 import { sloganMarkup } from '../components/slogan.js'
 import { setBack } from '../components/topbar.js'
-import { animate, appReady, enter, stagger } from '../core/animate.js'
+import { animate, appReady, enter, setHomeIntroDone, stagger } from '../core/animate.js'
 import { icons } from '../core/icons.js'
 import { go } from '../core/router.js'
 import { t } from '../i18n/index.js'
@@ -59,6 +59,9 @@ export function homeView(container) {
     setTimeout(() => root.classList.add('is-entered'), 1150)
     // Un latido en la llamada a la acción principal, una sola vez
     setTimeout(() => animate(root.querySelector('[data-go="setup"]'), 'pulse', { duration: 900 }), 1900)
+    // Lo último en acabar es ese latido (1900 + 900 ms). Con un temporizador y no con
+    // la promesa de animate(), por si se sale de la portada antes y no llega a terminar.
+    setTimeout(setHomeIntroDone, 2800)
   }
 
   paint({ animated: true })

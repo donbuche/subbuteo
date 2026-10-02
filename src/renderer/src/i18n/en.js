@@ -15,6 +15,7 @@ export default {
   'topbar.exitFullscreen': 'Exit full screen',
   'topbar.musicOn': 'Turn music on',
   'topbar.musicOff': 'Mute music',
+  'topbar.nowPlaying': 'Now playing',
   'topbar.noTracks': 'Add tracks in Settings › Music to hear background music',
 
   'home.newMatch': 'New match',
@@ -117,6 +118,7 @@ export default {
   'settings.section.durations': 'Duration',
   'settings.section.sounds': 'Sounds',
   'settings.section.music': 'Music',
+  'settings.section.background': 'Background',
   'settings.section.general': 'General',
   'settings.teams.available': 'Available teams',
   'settings.teams.changeCrest': 'Change crest',
@@ -175,6 +177,15 @@ export default {
   'settings.music.down': 'Move down',
   'settings.music.remove': 'Remove',
   'settings.music.add': 'Add tracks (MP3, WAV, OGG, M4A…)',
+  'settings.background.gallery': 'App background',
+  'settings.background.galleryHint': 'Shown behind every screen except the start-up splash screens.',
+  'settings.background.default': 'Pitch (default)',
+  'settings.background.custom': 'Your image',
+  'settings.background.customTitle': 'Your own image',
+  'settings.background.customHint': 'A landscape photo at least 1920 px wide works best. The edges are darkened slightly so everything stays easy to read.',
+  'settings.background.upload': 'Upload image',
+  'settings.background.change': 'Change image',
+  'settings.background.remove': 'Remove image',
   'settings.general.language': 'Language',
   'settings.general.defaultLanguage': 'Default language when the app opens',
   'settings.general.screen': 'Screen',
@@ -193,5 +204,13 @@ export default {
   'teams.espana': 'Spain',
   'teams.brasil': 'Brazil',
   'teams.argentina': 'Argentina',
-  'teams.catalunya': 'Catalonia'
+  'teams.catalunya': 'Catalonia',
+
+  'backgrounds.penalty-area': 'Attack in the box',
+  'backgrounds.cup-final': 'Cup final',
+  'backgrounds.about-to-shoot': 'About to shoot',
+  'backgrounds.counter-attack': 'Counter-attack',
+  'backgrounds.stadium': 'The stadium',
+  'backgrounds.the-ball': 'The ball',
+  'backgrounds.line-up': 'The line-up'
 }

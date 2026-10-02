@@ -76,12 +76,15 @@
   margin: 0;
 
   &__text {
-    @include display(800, true);
+    // Racing Sans One: un solo peso y ya inclinada de serie (sin cursiva forzada)
     position: relative;
     padding: 0 0.12em;
+    font-family: $font-slogan;
+    font-weight: 400;
     font-size: clamp(1.9rem, 3vw, 2.75rem);
     line-height: 1;
-    letter-spacing: 0.16em;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
     white-space: nowrap;
     color: $paper;
     // Sombra sencilla: lo justo para separar el blanco del fondo
@@ -926,6 +929,67 @@
     height: 144px;
     object-fit: contain;
     filter: drop-shadow(0 8px 10px rgb(0 0 0 / 0.2));
+  }
+}
+
+.bg-gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  &__tile {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+    padding: 8px 8px 12px;
+    font: inherit;
+    font-weight: 700;
+    text-align: left;
+    color: $ink;
+    background: $paper;
+    border: 1px solid $line;
+    border-radius: 18px;
+    cursor: pointer;
+    transition: border-color 150ms, box-shadow 150ms;
+
+    &:hover {
+      border-color: #d3c8b1;
+      box-shadow: 0 8px 18px -12px rgb(0 0 0 / 0.4);
+    }
+
+    &[aria-pressed='true'] {
+      color: $red;
+      border-color: $red;
+      box-shadow: 0 0 0 2px $red;
+    }
+  }
+
+  &__thumb {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    object-fit: cover;
+    border-radius: 12px;
+    background: $pitch-dark;
+
+    // Miniatura del césped por defecto, con el mismo dibujo que el fondo real
+    &--pitch {
+      background:
+        url('../assets/pitch-lines.svg') center / cover no-repeat,
+        radial-gradient(ellipse at center, transparent 45%, rgb(0 0 0 / 0.28) 100%),
+        repeating-linear-gradient(90deg, $pitch 0 8.333%, $pitch-light 8.333% 16.666%);
+    }
+  }
+
+  &__name {
+    padding: 0 6px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 }
 

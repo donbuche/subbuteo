@@ -9,6 +9,7 @@ export const icons = {
   stop: icon('<rect x="6" y="6" width="12" height="12" rx="2" fill="currentColor"/>'),
   close: icon('<path d="M6 6l12 12M18 6L6 18"/>'),
   back: icon('<path d="M15 5l-7 7 7 7"/>'),
+  user: icon('<circle cx="12" cy="8" r="4"/><path d="M4.5 20.5c1.4-3.8 4.2-5.7 7.5-5.7s6.1 1.9 7.5 5.7"/>'),
   music: icon('<path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/>'),
   musicOff: icon('<path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/><path d="M3 3l18 18"/>'),
   expand: icon('<path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/>'),

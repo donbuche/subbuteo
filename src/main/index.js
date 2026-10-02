@@ -65,10 +65,18 @@ function createMainWindow() {
   load(mainWindow, 'index')
 }
 
-// Hilo musical por defecto: los MP3 de src/renderer/public/music (en producción, copiados a out/renderer/music)
-function defaultMusicDir() {
-  if (!app.isPackaged && process.env.ELECTRON_RENDERER_URL) return join(app.getAppPath(), 'src/renderer/public/music')
-  return join(__dirname, '../renderer/music')
+// Carpetas de src/renderer/public incluidas en la app (en producción, copiadas a out/renderer):
+// music = hilo musical por defecto, backgrounds = galería de fondos
+function bundledDir(name) {
+  if (!app.isPackaged && process.env.ELECTRON_RENDERER_URL) return join(app.getAppPath(), 'src/renderer/public', name)
+  return join(__dirname, '../renderer', name)
+}
+const defaultMusicDir = () => bundledDir('music')
+
+// "night-stadium.jpg" -> "Night stadium" (nombre de reserva si no hay traducción)
+function imageTitle(fileName) {
+  const words = basename(fileName, extname(fileName)).replace(/[-_]+/g, ' ').trim()
+  return words.charAt(0).toUpperCase() + words.slice(1)
 }
 
 // Nombre de Pixabay "autor-01-titulo-del-tema-123456.mp3" -> "Titulo Del Tema · autor"
@@ -146,6 +154,17 @@ function registerIpc() {
       .filter((f) => MEDIA_EXTENSIONS.audio.includes(extname(f).slice(1).toLowerCase()))
       .sort()
       .map((f) => ({ url: `media://bundled/${encodeURIComponent(f)}`, name: trackTitle(f) }))
+  })
+
+  // Fondos de la galería; la ruta es relativa a la página, como la de los escudos incluidos.
+  // El id (nombre del archivo sin extensión) sirve para traducir el nombre: backgrounds.<id>
+  ipcMain.handle('backgrounds:defaults', () => {
+    const dir = bundledDir('backgrounds')
+    if (!existsSync(dir)) return []
+    return readdirSync(dir)
+      .filter((f) => MEDIA_EXTENSIONS.image.includes(extname(f).slice(1).toLowerCase()))
+      .sort()
+      .map((f) => ({ id: basename(f, extname(f)), url: `backgrounds/${encodeURIComponent(f)}`, name: imageTitle(f) }))
   })
 
   ipcMain.handle('media:remove', (_e, url) => {

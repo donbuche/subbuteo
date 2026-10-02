@@ -13,6 +13,7 @@ Subbuteo Scoreboard was designed and built in Arenys de Munt, out of a love for 
 | File | Source | Author | Licence |
 |---|---|---|---|
 | `whistle.m4a` | [218318 splicesound referee-whistle-blow-gymnasium.wav](https://commons.wikimedia.org/wiki/File:218318_splicesound_referee-whistle-blow-gymnasium.wav) | SpliceSound | CC0 |
+| `button-press.mp3` | [Button Press (45980)](https://pixabay.com/sound-effects/) | freesound_community (Pixabay) | [Pixabay Content License](https://pixabay.com/service/license-summary/) |
 | `goal.m4a` (mix) | [Arrowhead Stadium crowd noise.wav](https://commons.wikimedia.org/wiki/File:Arrowhead_Stadium_crowd_noise.wav) | Kj1595 | CC BY-SA 4.0 |
 | | [Applause i.ogg](https://commons.wikimedia.org/wiki/File:Applause_i.ogg) | thore | Public domain |
 | | [Hurray.ogg](https://commons.wikimedia.org/wiki/File:Hurray.ogg) | starlite | Public domain |
@@ -40,6 +41,10 @@ Tracks from [Pixabay Music](https://pixabay.com/music/), used under the [Pixabay
 | `sound4stock-football-anthem-inspiring-background-439515.mp3` | Football Anthem Inspiring Background | sound4stock |
 | `sound4stock-football-epic-anthem-560955.mp3` | Football Epic Anthem | sound4stock |
 | `soundsurfer-soccer-highlights-266225.mp3` | Soccer Highlights | soundsurfer |
+
+## Background photos (`src/renderer/public/backgrounds/`)
+
+Photos of Subbuteo games found online, with no author or licence recorded. They were cropped to 16:10, retouched (levels, contrast and saturation) and resized to 2560 × 1600 px. Like the crests, they are used in an app for personal use. Check their usage rights before distributing it publicly, and replace them or add their credits here.
 
 ## Team crests (`src/renderer/public/crests/`)
 

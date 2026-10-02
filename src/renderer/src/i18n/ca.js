@@ -15,6 +15,7 @@ export default {
   'topbar.exitFullscreen': 'Surt de la pantalla completa',
   'topbar.musicOn': 'Activa la música',
   'topbar.musicOff': 'Silencia la música',
+  'topbar.nowPlaying': 'Ara sona',
   'topbar.noTracks': 'Afegeix temes a Configuració › Música per escoltar música de fons',
 
   'home.newMatch': 'Nou partit',
@@ -117,6 +118,7 @@ export default {
   'settings.section.durations': 'Durada',
   'settings.section.sounds': 'Sons',
   'settings.section.music': 'Música',
+  'settings.section.background': 'Fons',
   'settings.section.general': 'General',
   'settings.teams.available': 'Equips disponibles',
   'settings.teams.changeCrest': 'Canvia l’escut',
@@ -175,6 +177,15 @@ export default {
   'settings.music.down': 'Baixa',
   'settings.music.remove': 'Treu',
   'settings.music.add': 'Afegeix temes (MP3, WAV, OGG, M4A…)',
+  'settings.background.gallery': 'Fons de l’app',
+  'settings.background.galleryHint': 'Es veu darrere de totes les pantalles, excepte als splash de l’inici.',
+  'settings.background.default': 'Gespa (per defecte)',
+  'settings.background.custom': 'La teva imatge',
+  'settings.background.customTitle': 'Imatge pròpia',
+  'settings.background.customHint': 'Millor una foto horitzontal d’almenys 1920 px d’amplada. Les vores s’enfosqueixen una mica perquè tot es llegeixi bé.',
+  'settings.background.upload': 'Puja una imatge',
+  'settings.background.change': 'Canvia la imatge',
+  'settings.background.remove': 'Treu la imatge',
   'settings.general.language': 'Idioma',
   'settings.general.defaultLanguage': 'Idioma per defecte en obrir l’app',
   'settings.general.screen': 'Pantalla',
@@ -193,5 +204,13 @@ export default {
   'teams.espana': 'Espanya',
   'teams.brasil': 'Brasil',
   'teams.argentina': 'Argentina',
-  'teams.catalunya': 'Catalunya'
+  'teams.catalunya': 'Catalunya',
+
+  'backgrounds.penalty-area': 'Atac a l’àrea',
+  'backgrounds.cup-final': 'Final de copa',
+  'backgrounds.about-to-shoot': 'A punt de xutar',
+  'backgrounds.counter-attack': 'Contraatac',
+  'backgrounds.stadium': 'L’estadi',
+  'backgrounds.the-ball': 'La pilota',
+  'backgrounds.line-up': 'L’alineació'
 }

@@ -34,10 +34,10 @@
 - **Match setup.** Pick each team from a fish-eye carousel (PES/FIFA style), enter the player names, choose the length of each half and, if you like, give one side a head start.
 - **Match history and standings.** Every finished match is saved with its date, time, teams, players and score. A player table ranks wins, draws, losses and goal difference. History can be exported to CSV.
 - **Sound.** A real referee's whistle for kick-off, pause and full time, cheering from the stands on every goal, and background music played in random order. The top-right corner holds the language selector and the full-screen, mute and quit buttons. Quitting during a match asks for confirmation first.
-- **Customisable.** Add your own teams and crests, change the preset match lengths, replace any sound effect and build your own music playlist.
+- **Customisable.** Add your own teams and crests, change the preset match lengths, replace any sound effect, build your own music playlist and choose the background, from the gallery or your own image.
 - **Four languages.** Castellano, Català, English and Italiano, switchable at any time from the flag selector, with a default language for startup.
 - **Lively, not flashy.** Screens fade between each other and their elements enter in sequence: the logo drops in, the "Subbuteo Scoreboard" title rises and its side rules open out, and goals, half time and the final result each get their own animation. It all switches off when macOS **Reduce motion** is on.
-- **Made for full screen.** It opens full screen behind two splash screens, Ariane webdesign and then the Subbuteo logo with the app title, in under 5 seconds in total, and keeps the display awake during a match. The layout is designed for a 14" MacBook Pro.
+- **Made for full screen.** It opens full screen behind two splash screens, Ariane webdesign and then the Subbuteo logo with the app title, in about 9.5 seconds in total, and keeps the display awake during a match. The layout is designed for a 14" MacBook Pro.
 
 ## Tech stack
 
@@ -50,7 +50,7 @@
 | Carousel | [SplideJS 4](https://splidejs.com/) |
 | Animations | [animate.css 4](https://animate.style/), with subtler entrance keyframes (`styles/animations.css`) |
 | Audio | Web Audio API for sound effects, `HTMLAudioElement` for the music playlist |
-| Fonts | Barlow, Barlow Condensed and Anton (bundled with Fontsource, so they work offline) |
+| Fonts | Barlow, Barlow Condensed, Anton and Racing Sans One for the app title (bundled with Fontsource, so they work offline) |
 | Storage | A local JSON file in the user data folder, written atomically |
 
 ## Getting started
@@ -95,6 +95,7 @@ src/
   renderer/
     index.html       Single window, including the two splash screens as an overlay
     public/
+      backgrounds/   Background gallery (photos shown in Settings → Background)
       crests/        Team crests (SVG)
       flags/         Flags for the language selector
       images/        Subbuteo and Ariane webdesign logos
@@ -123,9 +124,13 @@ The default teams live in `src/shared/defaults.js` and their crests in `src/rend
 
 ### Sounds and music
 
-- The whistle and goal sounds are bundled in `src/renderer/src/assets/sounds/`. You can replace them from **Settings → Sounds**.
+- The whistle, goal and button-press sounds are bundled in `src/renderer/src/assets/sounds/`. You can replace the whistle and goal sounds from **Settings → Sounds**. The button-press sound plays at the effects volume.
 - The default background music is every audio file in `src/renderer/public/music/`. It plays in random order until you add your own tracks in **Settings → Music**, which then replace it. Track titles come from the file names (`author-track-title-123456.mp3` becomes "Track Title · author").
 - Imported files are copied into the app's data folder and served through a private `media://` protocol.
+
+### Backgrounds
+
+By default the app shows a striped pitch drawn in CSS (the `pitch-background` mixin in `styles/_tokens.scss`). In **Settings → Background** you can pick a photo from the gallery or upload your own image instead. The gallery is every image in `src/renderer/public/backgrounds/`. Each photo's name is translated from the `backgrounds.<file name>` key in the i18n files (for example `backgrounds.line-up` for `line-up.jpg`). A photo without a translation uses its file name (`night-stadium.jpg` becomes "Night stadium"). The bundled photos are 2560 × 1600 px JPGs; the two small originals that had to be enlarged about 4× are blurred so their softness doesn't show. Landscape photos at least 1920 px wide work best. The edges are darkened slightly so the content stays easy to read.
 
 ### Languages
 
