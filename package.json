@@ -13,7 +13,10 @@
     "preview": "electron-vite preview",
     "dist:mac": "electron-vite build && electron-builder --mac",
     "dist:win": "electron-vite build && electron-builder --win",
-    "dist:linux": "electron-vite build && electron-builder --linux"
+    "dist:linux": "electron-vite build && electron-builder --linux",
+    "site:build": "node site/build.mjs",
+    "site:dev": "node site/build.mjs --serve",
+    "site:og": "electron site/scripts/og.cjs"
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.3.3",
