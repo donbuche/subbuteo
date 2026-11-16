@@ -7,7 +7,7 @@ export default {
   siteUrl: 'https://donbuche.github.io/subbuteo',
 
   // Google Analytics 4 measurement ID (G-XXXXXXXXXX). Leave empty to disable GA.
-  gaMeasurementId: '',
+  gaMeasurementId: 'G-LH2G93NPZ2',
 
   // Consent Mode v2: 'advanced' loads gtag straight away with every storage
   // type denied (cookieless pings) until the visitor accepts. 'basic' doesn't
