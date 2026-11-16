@@ -10,6 +10,13 @@
 </p>
 
 <p align="center">
+  <a href="https://donbuche.github.io/subbuteo/"><strong>Website</strong></a> ·
+  <a href="https://donbuche.github.io/subbuteo/es/">Español</a> ·
+  <a href="https://donbuche.github.io/subbuteo/ca/">Català</a> ·
+  <a href="https://donbuche.github.io/subbuteo/it/">Italiano</a>
+</p>
+
+<p align="center">
   <img alt="Electron" src="https://img.shields.io/badge/Electron-44-47848F?logo=electron&logoColor=white" />
   <img alt="Vite" src="https://img.shields.io/badge/Vite-7-646CFF?logo=vite&logoColor=white" />
   <img alt="JavaScript" src="https://img.shields.io/badge/JavaScript-vanilla-F7DF1E?logo=javascript&logoColor=black" />
@@ -108,6 +115,7 @@ src/
       assets/        Bundled sound effects and pitch lines
       styles/        tailwind.css, SCSS partials and custom-styles.scss
 docs/                README logo and screenshots
+site/                Landing page (GitHub Pages), see site/README.md
 ```
 
 ## Customisation
